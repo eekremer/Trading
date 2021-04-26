@@ -71,7 +71,7 @@ void EClient::EncodeField(          std::ostream&       os,
                                     T                   value       )
 {
 
-    os << value << '\0'; // 
+    os << value << '\0';  
 
 }
 
@@ -81,6 +81,7 @@ template<>
 void EClient::EncodeField<std::string>(             std::ostream&       os, 
                                                     std::string         value           )
 {
+
 
     if ( !value.empty() && !isAsciiPrintable( value ) ) 
     {
@@ -99,13 +100,27 @@ void EClient::EncodeField<std::string>(             std::ostream&       os,
 bool EClient::isAsciiPrintable( const std::string&  s )
 {
 
-    return std::all_of(         s.begin(), 
-                                s.end(), 
-                                []( char c ) 
-                                {
-                                    return      static_cast<unsigned char>( c ) >= 32 
-                                            &&  static_cast<unsigned char>( c ) < 127;
-                                }   
+    /*
+
+        template <class InputIterator, class UnaryPredicate>
+        bool    all_of(         InputIterator       first, 
+                                InputIterator       last, 
+                                UnaryPredicate      pred            );
+
+        Test condition on all elements in range
+        Returns true if pred returns true for all the elements in the range [first,last) or 
+        if the range is empty, and false otherwise.
+
+    */
+
+
+    return std::all_of(     s.begin(), 
+                            s.end(), 
+                            []( char c ) 
+                            {
+                                return      static_cast<unsigned char>( c ) >=  32  // Space
+                                        &&  static_cast<unsigned char>( c ) <  127; // DEL
+                            }   
                                                                             );
 
 }
@@ -335,13 +350,25 @@ int EClient::bufferedSend(  const std::string&  msg  )
 
 //*****************************************************************************************************************
 
-void EClient::reqMktData(TickerId tickerId, const Contract& contract,
-                         const std::string& genericTicks, bool snapshot, bool regulatorySnaphsot, const TagValueListSPtr& mktDataOptions)
+void EClient::reqMktData(               TickerId                tickerId, 
+                                  const Contract&               contract,
+                                  const std::string&            genericTicks, 
+                                        bool                    snapshot, 
+                                        bool                    regulatorySnaphsot, 
+                                  const TagValueListSPtr&       mktDataOptions             )
 {
+
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( tickerId, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             tickerId, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
     // not needed anymore validation
@@ -351,108 +378,172 @@ void EClient::reqMktData(TickerId tickerId, const Contract& contract,
     //	return;
     //}
 
-    if( m_serverVersion < MIN_SERVER_VER_DELTA_NEUTRAL) {
-        if( contract.deltaNeutralContract) {
-            m_pEWrapper->error( tickerId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support delta-neutral orders.");
+    if( m_serverVersion < MIN_SERVER_VER_DELTA_NEUTRAL ) 
+    {
+
+        if( contract.deltaNeutralContract ) 
+        {
+
+            m_pEWrapper->error(             tickerId, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + 
+                                            "  It does not support delta-neutral orders."   );
             return;
+        
+        }
+
+    }
+
+    if ( m_serverVersion < MIN_SERVER_VER_REQ_MKT_DATA_CONID ) 
+    {
+
+        if( contract.conId > 0 ) 
+        {
+
+            m_pEWrapper->error(             tickerId, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() +
+                                            "  It does not support conId parameter."    );
+            
+            return;
+
         }
     }
 
-    if (m_serverVersion < MIN_SERVER_VER_REQ_MKT_DATA_CONID) {
-        if( contract.conId > 0) {
-            m_pEWrapper->error( tickerId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support conId parameter.");
-            return;
-        }
-    }
+    if ( m_serverVersion < MIN_SERVER_VER_TRADING_CLASS ) 
+    {
 
-    if (m_serverVersion < MIN_SERVER_VER_TRADING_CLASS) {
-        if( !contract.tradingClass.empty() ) {
-            m_pEWrapper->error( tickerId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support tradingClass parameter in reqMktData.");
+        if( !contract.tradingClass.empty() ) 
+        {
+            m_pEWrapper->error(             tickerId, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() +
+                                            "  It does not support tradingClass parameter in reqMktData." );
+            
             return;
+        
         }
+
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
 
-    try {
-        const int VERSION = 11;
+    prepareBuffer(  msg  );
+
+    try 
+    {
+
+        const int VERSION  = 11;
 
         // send req mkt data msg
-        ENCODE_FIELD( REQ_MKT_DATA);
-        ENCODE_FIELD( VERSION);
-        ENCODE_FIELD( tickerId);
+        ENCODE_FIELD(           REQ_MKT_DATA                );
+        ENCODE_FIELD(           VERSION                     );
+        ENCODE_FIELD(           tickerId                    );
 
         // send contract fields
-        if( m_serverVersion >= MIN_SERVER_VER_REQ_MKT_DATA_CONID) {
-            ENCODE_FIELD( contract.conId);
+        if( m_serverVersion >= MIN_SERVER_VER_REQ_MKT_DATA_CONID ) 
+        {
+            ENCODE_FIELD(           contract.conId          );
         }
-        ENCODE_FIELD( contract.symbol);
-        ENCODE_FIELD( contract.secType);
-        ENCODE_FIELD( contract.lastTradeDateOrContractMonth);
-        ENCODE_FIELD( contract.strike);
-        ENCODE_FIELD( contract.right);
-        ENCODE_FIELD( contract.multiplier); // srv v15 and above
+        
+        ENCODE_FIELD(           contract.symbol             );
+        ENCODE_FIELD(           contract.secType            );
+        ENCODE_FIELD(           contract.lastTradeDateOrContractMonth       );
+        ENCODE_FIELD(           contract.strike             );
+        ENCODE_FIELD(           contract.right              );
+        ENCODE_FIELD(           contract.multiplier         ); // srv v15 and above
 
-        ENCODE_FIELD( contract.exchange);
-        ENCODE_FIELD( contract.primaryExchange); // srv v14 and above
-        ENCODE_FIELD( contract.currency);
+        ENCODE_FIELD(           contract.exchange           );
+        ENCODE_FIELD(           contract.primaryExchange    ); // srv v14 and above
+        ENCODE_FIELD(           contract.currency           );
 
-        ENCODE_FIELD( contract.localSymbol); // srv v2 and above
+        ENCODE_FIELD(           contract.localSymbol        ); // srv v2 and above
 
-        if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
-            ENCODE_FIELD( contract.tradingClass);
+
+        if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS ) 
+        {
+            ENCODE_FIELD(           contract.tradingClass           );
         }
 
         // Send combo legs for BAG requests (srv v8 and above)
-        if( contract.secType == "BAG")
+        if( contract.secType == "BAG" )
         {
+            
             const Contract::ComboLegList* const comboLegs = contract.comboLegs.get();
+            
             const int comboLegsCount = comboLegs ? comboLegs->size() : 0;
-            ENCODE_FIELD( comboLegsCount);
-            if( comboLegsCount > 0) {
-                for( int i = 0; i < comboLegsCount; ++i) {
-                    const ComboLeg* comboLeg = ((*comboLegs)[i]).get();
-                    assert( comboLeg);
-                    ENCODE_FIELD( comboLeg->conId);
-                    ENCODE_FIELD( comboLeg->ratio);
-                    ENCODE_FIELD( comboLeg->action);
-                    ENCODE_FIELD( comboLeg->exchange);
+            
+            ENCODE_FIELD(           comboLegsCount          );
+
+            if( comboLegsCount > 0 )
+            {
+
+                for( int i = 0; i < comboLegsCount; ++i ) 
+                {
+
+                    const ComboLeg* comboLeg = ( (*comboLegs)[ i ] ).get();
+                    
+                    assert(  comboLeg  );
+                    
+                    ENCODE_FIELD(           comboLeg->conId                 );
+                    ENCODE_FIELD(           comboLeg->ratio                 );
+                    ENCODE_FIELD(           comboLeg->action                );
+                    ENCODE_FIELD(           comboLeg->exchange              );
+      
                 }
+      
             }
+      
         }
 
-        if( m_serverVersion >= MIN_SERVER_VER_DELTA_NEUTRAL) {
-            if( contract.deltaNeutralContract) {
+        if( m_serverVersion >= MIN_SERVER_VER_DELTA_NEUTRAL ) 
+        {
+
+            if( contract.deltaNeutralContract ) 
+            {
+
                 const DeltaNeutralContract& deltaNeutralContract = *contract.deltaNeutralContract;
-                ENCODE_FIELD( true);
-                ENCODE_FIELD( deltaNeutralContract.conId);
-                ENCODE_FIELD( deltaNeutralContract.delta);
-                ENCODE_FIELD( deltaNeutralContract.price);
+                
+                ENCODE_FIELD(           true                                );
+                ENCODE_FIELD(           deltaNeutralContract.conId          );
+                ENCODE_FIELD(           deltaNeutralContract.delta          );
+                ENCODE_FIELD(           deltaNeutralContract.price          );
+            
             }
-            else {
-                ENCODE_FIELD( false);
+            else 
+            {
+
+                ENCODE_FIELD( false );
+            
             }
+
         }
 
-        ENCODE_FIELD( genericTicks); // srv v31 and above
-        ENCODE_FIELD( snapshot); // srv v35 and above
+        ENCODE_FIELD(           genericTicks            ); // srv v31 and above
+        ENCODE_FIELD(           snapshot                ); // srv v35 and above
 
-        if (m_serverVersion >= MIN_SERVER_VER_REQ_SMART_COMPONENTS) {
-            ENCODE_FIELD(regulatorySnaphsot);
+
+        if ( m_serverVersion >= MIN_SERVER_VER_REQ_SMART_COMPONENTS ) 
+        {
+            ENCODE_FIELD(           regulatorySnaphsot              );
         }
 
         // send mktDataOptions parameter
-        if( m_serverVersion >= MIN_SERVER_VER_LINKING) {
-            ENCODE_TAGVALUELIST(mktDataOptions);
+        if( m_serverVersion >= MIN_SERVER_VER_LINKING ) 
+        {
+            ENCODE_TAGVALUELIST(            mktDataOptions          );
         }
+
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(tickerId, ex.error().code(), ex.error().msg() + ex.text());
+    catch ( EClientException& ex ) 
+    {
+
+        m_pEWrapper->error(             tickerId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
         return;
+    
     }
 
     closeAndSend( msg.str() );

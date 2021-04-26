@@ -426,6 +426,7 @@ void EClientSocket::encodeMsgLen(  			std::string& 		msg,
 						&netlen, 
 						HEADER_LEN				);
 
+
 }
 
 //****************************************************************************************************************
@@ -451,8 +452,15 @@ bool EClientSocket::closeAndSend(				std::string 	msg,
 	
 	}
 
+
+	//******************************
+	//******************************
+
 	if ( bufferedSend( msg ) == -1 )
         return handleSocketError();
+
+	//******************************
+	//******************************
 
     return true;
 
@@ -460,7 +468,7 @@ bool EClientSocket::closeAndSend(				std::string 	msg,
 
 //****************************************************************************************************************
 
-void EClientSocket::prepareBufferImpl( std::ostream&  buf ) const
+void EClientSocket::prepareBufferImpl(  std::ostream&   buf  ) const
 {
 
 	assert( 		m_useV100Plus 								);
@@ -468,9 +476,29 @@ void EClientSocket::prepareBufferImpl( std::ostream&  buf ) const
 	assert( 		sizeof( unsigned ) == HEADER_LEN 			);
 
 	char header[ HEADER_LEN ] = { 0 };
+
+	/*
+
+		ostream& write (	const char* 		s, 
+							      streamsize 	n		);
+
+		Write block of data
+		Inserts the first n characters of the array pointed by s into the stream.
+
+		This function simply copies a block of data, without checking its contents: 
+		The array may contain null characters, which are also copied without stopping 
+		the copying process.
+
+	*/	
 	
+	//************************************************************
+	// insert 4 bytes of data pointed by header into buf
+	//************************************************************
+
 	buf.write( 				header, 
 							sizeof( header ) 					);
+
+	//************************************************************
 							
 }
 

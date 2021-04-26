@@ -601,11 +601,16 @@ std::shared_ptr<EMessage> EReader::getMsg( void )
 void EReader::processMsgs( void ) 
 {
 
+
 	//**********************************
 	// send bytes on buffer to socket FD
 	//**********************************
 
 	m_pClientSocket->onSend();
+
+	//**********************************
+	//**********************************
+
 
 
 	//*****************************************
@@ -614,6 +619,7 @@ void EReader::processMsgs( void )
 
 	std::shared_ptr< EMessage > msg = getMsg();
 
+	//*****************************************
 	//*****************************************
 
 
@@ -630,6 +636,7 @@ void EReader::processMsgs( void )
 	while ( processMsgsDecoder_.parseAndProcessMsg(  pBegin,  msg->end()  ) > 0 ) 
 	{
 
+
 		//**********************************
 		// get the next message in the queue
 		//**********************************
@@ -637,6 +644,8 @@ void EReader::processMsgs( void )
 		msg = getMsg();
 
 		//**********************************
+		//**********************************
+
 
 		if ( !msg.get() )  // if no more messages, breaks the loop !
 			break;

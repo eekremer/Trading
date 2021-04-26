@@ -3622,7 +3622,7 @@ int EDecoder::parseAndProcessMsg(			const char*& 	beginPtr,
 	// process a single message from the buffer;
 	// return number of bytes consumed
 
-	assert( beginPtr && beginPtr < endPtr );
+	assert(  beginPtr  &&  beginPtr < endPtr  );
 
 	if ( m_serverVersion == 0 )
 		return processConnectAck( beginPtr, endPtr );
