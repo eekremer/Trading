@@ -202,7 +202,7 @@ const int       COMPLETED_ORDER                           = 101;
 const int       COMPLETED_ORDERS_END                      = 102;
 const int       REPLACE_FA_END                            = 103;
 
-const int       HEADER_LEN     =  4; // 4 bytes for msg length
+const int       HEADER_LEN     =  4; // 4 bytes for msg header's length
 const int       MAX_MSG_LEN    =  0xFFFFFF; // 16Mb - 1byte
 
 const char      API_SIGN[ 4 ] =  { 'A', 'P', 'I', '\0' }; // "API"

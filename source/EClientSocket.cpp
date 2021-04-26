@@ -390,7 +390,7 @@ void EClientSocket::encodeMsgLen(  			std::string& 		msg,
 	assert( 		sizeof( unsigned ) == HEADER_LEN 			);
 	assert( 		msg.size() > offset + HEADER_LEN 			);
 
-	unsigned len = msg.size() - HEADER_LEN - offset;
+	unsigned len =  msg.size() - HEADER_LEN - offset;
 	
 
 	if( len > MAX_MSG_LEN ) 

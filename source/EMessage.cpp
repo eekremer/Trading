@@ -19,6 +19,25 @@ EMessage::EMessage(  const std::vector< char > &data  )
 const char* EMessage::begin( void ) const
 {
 
+    /*
+
+        value_type*         data() noexcept;
+        const value_type*   data() const noexcept;
+
+        Access data
+        Returns a direct pointer to the memory array used internally by the vector to store 
+        its owned elements.
+
+        Because elements in the vector are guaranteed to be stored in contiguous storage 
+        locations in the same order as represented by the vector, the pointer retrieved 
+        can be offset to access any element in the array.
+
+        Return value
+        A pointer to the first element in the array used internally by the vector.
+
+    */
+
+
     return data.data();
 
 }

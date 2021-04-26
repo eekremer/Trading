@@ -54,19 +54,20 @@ const char* EDecoder::processTickPriceMsg(			const char* 	ptr,
 	int 	size;
 	int 	attrMask;
 
-	DECODE_FIELD(	version 		);
-	DECODE_FIELD( 	tickerId		);
-	DECODE_FIELD( 	tickTypeInt		);
-	DECODE_FIELD( 	price			);
-	DECODE_FIELD( 	size			); // ver 2 field
-	DECODE_FIELD( 	attrMask		); // ver 3 field
+
+	DECODE_FIELD(		version 			);
+	DECODE_FIELD( 		tickerId			);
+	DECODE_FIELD( 		tickTypeInt			);
+	DECODE_FIELD( 		price				);
+	DECODE_FIELD( 		size				); // ver 2 field
+	DECODE_FIELD( 		attrMask			); // ver 3 field
 
 	TickAttrib attrib = {};
 
 	attrib.canAutoExecute = attrMask == 1;
 
 
-	if (m_serverVersion >= MIN_SERVER_VER_PAST_LIMIT)
+	if ( m_serverVersion >= MIN_SERVER_VER_PAST_LIMIT )
 	{
 
 		std::bitset<32> mask( attrMask );
@@ -183,18 +184,18 @@ const char* EDecoder::processTickOptionComputationMsg( 				const char* 	ptr,
 
 	int 	tickerId;
 	int 	tickTypeInt;
-	int 	tickAttrib = 0;
+	int 	tickAttrib 	= 	0;
 
 	double 	impliedVol;
 	double 	delta;
 
-	double 	optPrice 	= DBL_MAX;
-	double 	pvDividend 	= DBL_MAX;
+	double 	optPrice 	= 	DBL_MAX;
+	double 	pvDividend 	= 	DBL_MAX;
 
-	double 	gamma 		= DBL_MAX;
-	double 	vega 		= DBL_MAX;
-	double 	theta 		= DBL_MAX;
-	double 	undPrice 	= DBL_MAX;
+	double 	gamma 		= 	DBL_MAX;
+	double 	vega 		= 	DBL_MAX;
+	double 	theta 		= 	DBL_MAX;
+	double 	undPrice 	= 	DBL_MAX;
 
 	if ( m_serverVersion < MIN_SERVER_VER_PRICE_BASED_VOLATILITY )
 	{
@@ -360,16 +361,16 @@ const char* EDecoder::processTickEfpMsg(			const char* 	ptr,
 													const char* 	endPtr			) 
 {
 
-	int 		version;
-	int 		tickerId;
-	int 		tickTypeInt;
-	double 		basisPoints;
-	std::string formattedBasisPoints;
-	double 		impliedFuturesPrice;
-	int 		holdDays;
-	std::string futureLastTradeDate;
-	double 		dividendImpact;
-	double 		dividendsToLastTradeDate;
+	int 			version;
+	int 			tickerId;
+	int 			tickTypeInt;
+	double 			basisPoints;
+	std::string 	formattedBasisPoints;
+	double 			impliedFuturesPrice;
+	int 			holdDays;
+	std::string 	futureLastTradeDate;
+	double 			dividendImpact;
+	double 			dividendsToLastTradeDate;
 
 	DECODE_FIELD( 	version						);
 	DECODE_FIELD( 	tickerId					);
@@ -3633,7 +3634,7 @@ int EDecoder::parseAndProcessMsg(			const char*& 	beginPtr,
 
 		int msgId;
 
-		DECODE_FIELD( msgId );
+		DECODE_FIELD(  msgId  );
 
 
 		switch( msgId ) 
@@ -4010,15 +4011,17 @@ const char* EDecoder::FindFieldEnd(				const char* 	ptr,
 
 	/*
 
-		const 	void * memchr ( const void * ptr, int value, size_t num );
-      			void * memchr (       void * ptr, int value, size_t num );
+		const 	void * memchr (   const void 	*ptr, int  value, size_t  num   );
+      			void * memchr (         void 	*ptr, int  value, size_t  num   );
 
 		Locate character in block of memory
 
-		Searches within the first num bytes of the block of memory pointed by ptr for the first occurrence of value 
-		(interpreted as an unsigned char), and returns a pointer to it.
+		Searches within the first num bytes of the block of memory pointed by ptr for the 
+		first occurrence of value (interpreted as an unsigned char), and returns 
+		a pointer to it.
 
-		Both value and each of the bytes checked on the the ptr array are interpreted as unsigned char for the comparison.
+		Both value and each of the bytes checked on the the ptr array are interpreted 
+		as unsigned char for the comparison.
 
 		If the value is not found, the function returns a null pointer.
 		
@@ -4210,7 +4213,10 @@ bool EDecoder::DecodeField(			char& 			charValue,
 	
 	const char* fieldBeg = ptr;
 	
-	const char* fieldEnd = FindFieldEnd( ptr, endPtr );
+
+	// find the end of the payload
+	const char* fieldEnd = FindFieldEnd( 		ptr, 
+												endPtr 		);
 	
 	if( !fieldEnd )
 		return false;

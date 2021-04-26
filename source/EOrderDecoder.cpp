@@ -812,9 +812,9 @@ bool EOrderDecoder::decodeScaleOrderParams(         const char*&    ptr,
     
     DECODE_FIELD_MAX(           m_order->scalePriceIncrement            );
 
-    if (    m_version >= 28                    && 
-            m_order->scalePriceIncrement > 0.0 && 
-            m_order->scalePriceIncrement != UNSET_DOUBLE    ) 
+    if (        m_version >= 28                                 && 
+                m_order->scalePriceIncrement > 0.0              && 
+                m_order->scalePriceIncrement != UNSET_DOUBLE                ) 
     {
     
         DECODE_FIELD_MAX(           m_order->scalePriceAdjustValue              );

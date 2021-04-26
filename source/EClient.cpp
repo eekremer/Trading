@@ -455,7 +455,8 @@ void EClient::reqMktData(TickerId tickerId, const Contract& contract,
         return;
     }
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+    
 }
 
 //********************************************************************************************

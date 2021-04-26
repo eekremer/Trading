@@ -154,8 +154,8 @@ void EReader::readToQueue()
 
 
 		// STEP I:
-		// read a message from Socket FD
-		// if there's data in outgoing buffer, it signals to the other thread   
+		// read a message from Socket
+		// if there's data in outgoing buffer, it signals the other thread   
 		if (  m_buf.size() == 0   &&  !processNonBlockingSelect()  &&  m_pClientSocket->isSocketOK() )
 			continue;
 
@@ -581,10 +581,10 @@ std::shared_ptr<EMessage> EReader::getMsg( void )
 	//***************************************************
 	//***************************************************
 
-	// it takes its first element 
+	// it takes queue's first element 
 	std::shared_ptr< EMessage > msg = m_msgQueue.front();
 
-	// it deletes its first element
+	// it deletes queue's first element
 	m_msgQueue.pop_front();
 
 	//**************************************************
@@ -609,7 +609,7 @@ void EReader::processMsgs( void )
 
 
 	//*****************************************
-	// get a message from the queue 
+	// get the first message from the queue 
 	//*****************************************
 
 	std::shared_ptr< EMessage > msg = getMsg();
@@ -622,14 +622,23 @@ void EReader::processMsgs( void )
 
 	const char *pBegin = msg->begin();
 
-	//
+
+	//*****************************************
+	// loop goes processing messages one by one
+	//*****************************************
 
 	while ( processMsgsDecoder_.parseAndProcessMsg(  pBegin,  msg->end()  ) > 0 ) 
 	{
 
+		//**********************************
+		// get the next message in the queue
+		//**********************************
+
 		msg = getMsg();
 
-		if ( !msg.get() )
+		//**********************************
+
+		if ( !msg.get() )  // if no more messages, breaks the loop !
 			break;
 
 		pBegin = msg->begin();
