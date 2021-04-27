@@ -552,35 +552,61 @@ void EClient::reqMktData(               TickerId                tickerId,
 
 //********************************************************************************************
 
-void EClient::cancelMktData(TickerId tickerId)
+void EClient::cancelMktData(  TickerId   tickerId  )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( tickerId, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected()) 
+    {
+
+        m_pEWrapper->error(             tickerId, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()                 );
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+    
+    prepareBuffer(  msg  );
 
     const int VERSION = 2;
 
     // send cancel mkt data msg
-    ENCODE_FIELD( CANCEL_MKT_DATA);
-    ENCODE_FIELD( VERSION);
-    ENCODE_FIELD( tickerId);
+    ENCODE_FIELD(           CANCEL_MKT_DATA             );
+    ENCODE_FIELD(           VERSION                     );
+    ENCODE_FIELD(           tickerId                    );
 
-    closeAndSend( msg.str());
+    //**************************
+    //**************************
+
+    closeAndSend(  msg.str()  );
+
+    //**************************
+    //**************************
+
 }
 
 //********************************************************************************************
 
-void EClient::reqMktDepth( TickerId tickerId, const Contract& contract, int numRows, bool isSmartDepth, const TagValueListSPtr& mktDepthOptions)
+void EClient::reqMktDepth(          TickerId                tickerId, 
+                              const Contract&               contract, 
+                                    int                     numRows, 
+                                    bool                    isSmartDepth, 
+                              const TagValueListSPtr&       mktDepthOptions         )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( tickerId, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             tickerId, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
     // Not needed anymore validation
@@ -590,80 +616,124 @@ void EClient::reqMktDepth( TickerId tickerId, const Contract& contract, int numR
     //	return;
     //}
 
-    if (m_serverVersion < MIN_SERVER_VER_TRADING_CLASS) {
-        if( !contract.tradingClass.empty() || (contract.conId > 0)) {
-            m_pEWrapper->error( tickerId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support conId and tradingClass parameters in reqMktDepth.");
+    if ( m_serverVersion < MIN_SERVER_VER_TRADING_CLASS ) 
+    {
+
+        if( !contract.tradingClass.empty() || ( contract.conId > 0 ) ) 
+        {
+
+            m_pEWrapper->error(             tickerId, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + "  It does not support conId and tradingClass parameters in reqMktDepth.");
+            
             return;
+
         }
+
     }
 
-    if (m_serverVersion < MIN_SERVER_VER_SMART_DEPTH && isSmartDepth) {
-        m_pEWrapper->error( tickerId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support SMART depth request.");
+    if ( m_serverVersion < MIN_SERVER_VER_SMART_DEPTH && isSmartDepth ) 
+    {
+    
+        m_pEWrapper->error(             tickerId, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support SMART depth request.");
+    
         return;
+    
     }
 
-    if (m_serverVersion < MIN_SERVER_VER_MKT_DEPTH_PRIM_EXCHANGE && !contract.primaryExchange.empty()) {
-        m_pEWrapper->error( tickerId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support primaryExchange parameter in reqMktDepth.");
+    if ( m_serverVersion < MIN_SERVER_VER_MKT_DEPTH_PRIM_EXCHANGE && !contract.primaryExchange.empty() ) 
+    {
+
+        m_pEWrapper->error(             tickerId, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support primaryExchange parameter in reqMktDepth.");
+        
         return;
+
     }
 
     std::stringstream msg;
     prepareBuffer( msg);
 
-    try {
+    try 
+    {
+    
         const int VERSION = 5;
 
         // send req mkt data msg
-        ENCODE_FIELD( REQ_MKT_DEPTH);
-        ENCODE_FIELD( VERSION);
-        ENCODE_FIELD( tickerId);
+        ENCODE_FIELD(           REQ_MKT_DEPTH                           );
+        ENCODE_FIELD(           VERSION                                 );
+        ENCODE_FIELD(           tickerId                                );
 
         // send contract fields
-        if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
+        if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS ) 
+        {
             ENCODE_FIELD( contract.conId);
         }
-        ENCODE_FIELD( contract.symbol);
-        ENCODE_FIELD( contract.secType);
-        ENCODE_FIELD( contract.lastTradeDateOrContractMonth);
-        ENCODE_FIELD( contract.strike);
-        ENCODE_FIELD( contract.right);
-        ENCODE_FIELD( contract.multiplier); // srv v15 and above
-        ENCODE_FIELD( contract.exchange);
-        if( m_serverVersion >= MIN_SERVER_VER_MKT_DEPTH_PRIM_EXCHANGE) {
-            ENCODE_FIELD( contract.primaryExchange);
+        
+        ENCODE_FIELD(           contract.symbol                         );
+        ENCODE_FIELD(           contract.secType                        );
+        ENCODE_FIELD(           contract.lastTradeDateOrContractMonth   );
+        ENCODE_FIELD(           contract.strike                         );
+        ENCODE_FIELD(           contract.right                          );
+        ENCODE_FIELD(           contract.multiplier                     ); // srv v15 and above
+        ENCODE_FIELD(           contract.exchange                       );
+        
+        if( m_serverVersion >= MIN_SERVER_VER_MKT_DEPTH_PRIM_EXCHANGE ) 
+        {
+            ENCODE_FIELD( contract.primaryExchange );
         }
-        ENCODE_FIELD( contract.currency);
-        ENCODE_FIELD( contract.localSymbol);
-        if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
-            ENCODE_FIELD( contract.tradingClass);
+        
+        ENCODE_FIELD(           contract.currency                       );
+        ENCODE_FIELD(           contract.localSymbol                    );
+        
+        if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS )
+        {
+            ENCODE_FIELD(               contract.tradingClass           );
         }
 
-        ENCODE_FIELD( numRows); // srv v19 and above
+        ENCODE_FIELD( numRows ); // srv v19 and above
 
-        if( m_serverVersion >= MIN_SERVER_VER_SMART_DEPTH) {
-            ENCODE_FIELD( isSmartDepth);
+        if( m_serverVersion >= MIN_SERVER_VER_SMART_DEPTH ) 
+        {
+            ENCODE_FIELD(               isSmartDepth                    );
         }
 
         // send mktDepthOptions parameter
-        if( m_serverVersion >= MIN_SERVER_VER_LINKING) {
-            ENCODE_TAGVALUELIST(mktDepthOptions);
+        if( m_serverVersion >= MIN_SERVER_VER_LINKING ) 
+        {
+            ENCODE_TAGVALUELIST(        mktDepthOptions                 );
         }
+
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(tickerId, ex.error().code(), ex.error().msg() + ex.text());
+    catch (  EClientException&  ex  ) 
+    {
+
+        m_pEWrapper->error(             tickerId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
         return;
+    
     }
 
-    closeAndSend( msg.str());
+    //**************************
+    //**************************
+
+    closeAndSend(  msg.str()  );
+
+    //**************************
+    //**************************
+
 }
 
 //********************************************************************************************
 
 void EClient::cancelMktDepth( TickerId tickerId, bool isSmartDepth)
 {
+    
     // not connected?
     if( !isConnected()) {
         m_pEWrapper->error( tickerId, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
@@ -702,15 +772,28 @@ void EClient::cancelMktDepth( TickerId tickerId, bool isSmartDepth)
 
 //********************************************************************************************
 
-void EClient::reqHistoricalData(TickerId tickerId, const Contract& contract,
-                                const std::string& endDateTime, const std::string& durationStr,
-                                const std::string&  barSizeSetting, const std::string& whatToShow,
-                                int useRTH, int formatDate, bool keepUpToDate, const TagValueListSPtr& chartOptions)
+void EClient::reqHistoricalData(                TickerId                tickerId, 
+                                          const Contract&               contract,
+                                          const std::string&            endDateTime, 
+                                          const std::string&            durationStr,
+                                          const std::string&            barSizeSetting, 
+                                          const std::string&            whatToShow,
+                                                int                     useRTH, 
+                                                int                     formatDate, 
+                                                bool                    keepUpToDate, 
+                                          const TagValueListSPtr&       chartOptions        )
 {
+
     // not connected?
-    if (!isConnected()) {
-        m_pEWrapper->error(tickerId, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if ( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             tickerId, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()                 );
+        
         return;
+    
     }
 
     // Not needed anymore validation
@@ -719,88 +802,128 @@ void EClient::reqHistoricalData(TickerId tickerId, const Contract& contract,
     //	return;
     //}
 
-    if (m_serverVersion < MIN_SERVER_VER_TRADING_CLASS) {
-        if (!contract.tradingClass.empty() || (contract.conId > 0)) {
-            m_pEWrapper->error(tickerId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support conId and tradingClass parameters in reqHistoricalData.");
+    if ( m_serverVersion < MIN_SERVER_VER_TRADING_CLASS ) 
+    {
+
+        if ( !contract.tradingClass.empty() || (contract.conId > 0 ) ) 
+        {
+
+            m_pEWrapper->error(             tickerId, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + "  It does not support conId and tradingClass parameters in reqHistoricalData.");
+            
             return;
+
         }
+
     }
 
     std::stringstream msg;
-    prepareBuffer(msg);
+    
+    prepareBuffer(  msg  );
 
-    try {
+    try 
+    {
+
         const int VERSION = 6;
 
-        ENCODE_FIELD(REQ_HISTORICAL_DATA);
+        ENCODE_FIELD(           REQ_HISTORICAL_DATA         );
 
-        if (m_serverVersion < MIN_SERVER_VER_SYNT_REALTIME_BARS) {
-            ENCODE_FIELD(VERSION);
+        if ( m_serverVersion < MIN_SERVER_VER_SYNT_REALTIME_BARS ) 
+        {
+            ENCODE_FIELD(           VERSION             );
         }
 
-        ENCODE_FIELD(tickerId);
+        ENCODE_FIELD(           tickerId            );
 
         // send contract fields
-        if (m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
+        if ( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS ) 
+        {
             ENCODE_FIELD(contract.conId);
         }
-        ENCODE_FIELD(contract.symbol);
-        ENCODE_FIELD(contract.secType);
-        ENCODE_FIELD(contract.lastTradeDateOrContractMonth);
-        ENCODE_FIELD(contract.strike);
-        ENCODE_FIELD(contract.right);
-        ENCODE_FIELD(contract.multiplier);
-        ENCODE_FIELD(contract.exchange);
-        ENCODE_FIELD(contract.primaryExchange);
-        ENCODE_FIELD(contract.currency);
-        ENCODE_FIELD(contract.localSymbol);
-        if (m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
-            ENCODE_FIELD(contract.tradingClass);
+        
+        ENCODE_FIELD(           contract.symbol                             );
+        ENCODE_FIELD(           contract.secType                            );
+        ENCODE_FIELD(           contract.lastTradeDateOrContractMonth       );
+        ENCODE_FIELD(           contract.strike                             );
+        ENCODE_FIELD(           contract.right                              );
+        ENCODE_FIELD(           contract.multiplier                         );
+        ENCODE_FIELD(           contract.exchange                           );
+        ENCODE_FIELD(           contract.primaryExchange                    );
+        ENCODE_FIELD(           contract.currency                           );
+        ENCODE_FIELD(           contract.localSymbol                        );
+
+        if ( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS ) 
+        {
+            ENCODE_FIELD(           contract.tradingClass               );
         }
-        ENCODE_FIELD(contract.includeExpired); // srv v31 and above
+        
+        ENCODE_FIELD(           contract.includeExpired                     ); // srv v31 and above
 
-        ENCODE_FIELD(endDateTime); // srv v20 and above
-        ENCODE_FIELD(barSizeSetting); // srv v20 and above
+        ENCODE_FIELD(           endDateTime                                 ); // srv v20 and above
+        ENCODE_FIELD(           barSizeSetting                              ); // srv v20 and above
 
-        ENCODE_FIELD(durationStr);
-        ENCODE_FIELD(useRTH);
-        ENCODE_FIELD(whatToShow);
-        ENCODE_FIELD(formatDate); // srv v16 and above
+        ENCODE_FIELD(           durationStr                                 );
+        ENCODE_FIELD(           useRTH                                      );
+        ENCODE_FIELD(           whatToShow                                  );
+        ENCODE_FIELD(           formatDate                                  ); // srv v16 and above
 
         // Send combo legs for BAG requests
-        if (contract.secType == "BAG")
+        if ( contract.secType == "BAG" )
         {
+
             const Contract::ComboLegList* const comboLegs = contract.comboLegs.get();
+
             const int comboLegsCount = comboLegs ? comboLegs->size() : 0;
-            ENCODE_FIELD(comboLegsCount);
-            if (comboLegsCount > 0) {
-                for(int i = 0; i < comboLegsCount; ++i) {
-                    const ComboLeg* comboLeg = ((*comboLegs)[i]).get();
-                    assert(comboLeg);
-                    ENCODE_FIELD(comboLeg->conId);
-                    ENCODE_FIELD(comboLeg->ratio);
-                    ENCODE_FIELD(comboLeg->action);
-                    ENCODE_FIELD(comboLeg->exchange);
+            
+            ENCODE_FIELD(           comboLegsCount          );
+
+            if ( comboLegsCount > 0 ) 
+            {
+
+                for( int i = 0; i < comboLegsCount; ++i ) 
+                {
+
+                    const ComboLeg* comboLeg = ( (*comboLegs)[ i ] ).get();
+                
+                    assert(  comboLeg  );
+                
+                    ENCODE_FIELD(           comboLeg->conId             );
+                    ENCODE_FIELD(           comboLeg->ratio             );
+                    ENCODE_FIELD(           comboLeg->action            );
+                    ENCODE_FIELD(           comboLeg->exchange          );
+                
                 }
+
             }
+
         }
 
-        if (m_serverVersion >= MIN_SERVER_VER_SYNT_REALTIME_BARS) {
-            ENCODE_FIELD(keepUpToDate);
+        if ( m_serverVersion >= MIN_SERVER_VER_SYNT_REALTIME_BARS ) 
+        {
+            ENCODE_FIELD(           keepUpToDate                );
         }
 
         // send chartOptions parameter
-        if (m_serverVersion >= MIN_SERVER_VER_LINKING) {
-            ENCODE_TAGVALUELIST(chartOptions);
+        if ( m_serverVersion >= MIN_SERVER_VER_LINKING ) 
+        {
+            ENCODE_TAGVALUELIST(            chartOptions            );
         }
+
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(tickerId, ex.error().code(), ex.error().msg() + ex.text());
+    catch ( EClientException&  ex ) 
+    {
+
+        m_pEWrapper->error(             tickerId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
         return;
+    
     }
 
-    closeAndSend(msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
@@ -1536,13 +1659,13 @@ void EClient::reqCurrentTime()
 
 //*****************************************************************************************************************
 
-void EClient::placeOrder(               OrderId             id,             
-                                        const Contract&     contract, 
-                                        const Order&        order               )
+void EClient::placeOrder(             OrderId           id,             
+                                const Contract&         contract, 
+                                const Order&            order               )
 {
     
     // not connected?
-    if( !isConnected()) 
+    if( !isConnected() ) 
     {
 
         m_pEWrapper->error(                 id, 
@@ -1670,238 +1793,424 @@ void EClient::placeOrder(               OrderId             id,
 
     }
 
-    if (m_serverVersion < MIN_SERVER_VER_PLACE_ORDER_CONID) {
-        if( contract.conId > 0) {
-            m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support conId parameter.");
-            return;
-        }
-    }
-
-    if (m_serverVersion < MIN_SERVER_VER_SSHORTX) {
-        if( order.exemptCode != -1) {
-            m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support exemptCode parameter.");
-            return;
-        }
-    }
-
-    if (m_serverVersion < MIN_SERVER_VER_SSHORTX) {
-        const Contract::ComboLegList* const comboLegs = contract.comboLegs.get();
-        const int comboLegsCount = comboLegs ? comboLegs->size() : 0;
-        for( int i = 0; i < comboLegsCount; ++i) {
-            const ComboLeg* comboLeg = ((*comboLegs)[i]).get();
-            assert( comboLeg);
-            if( comboLeg->exemptCode != -1 ){
-                m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                    "  It does not support exemptCode parameter.");
-                return;
-            }
-        }
-    }
-
-    if( m_serverVersion < MIN_SERVER_VER_HEDGE_ORDERS) {
-        if( !order.hedgeType.empty()) {
-            m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support hedge orders.");
-            return;
-        }
-    }
-
-    if( m_serverVersion < MIN_SERVER_VER_OPT_OUT_SMART_ROUTING) {
-        if (order.optOutSmartRouting) {
-            m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support optOutSmartRouting parameter.");
-            return;
-        }
-    }
-
-    if (m_serverVersion < MIN_SERVER_VER_DELTA_NEUTRAL_CONID) {
-        if (order.deltaNeutralConId > 0 
-            || !order.deltaNeutralSettlingFirm.empty()
-            || !order.deltaNeutralClearingAccount.empty()
-            || !order.deltaNeutralClearingIntent.empty()
-            ) {
-                m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                    "  It does not support deltaNeutral parameters: ConId, SettlingFirm, ClearingAccount, ClearingIntent.");
-                return;
-        }
-    }
-
-    if (m_serverVersion < MIN_SERVER_VER_DELTA_NEUTRAL_OPEN_CLOSE) {
-        if (!order.deltaNeutralOpenClose.empty()
-            || order.deltaNeutralShortSale
-            || order.deltaNeutralShortSaleSlot > 0 
-            || !order.deltaNeutralDesignatedLocation.empty()
-            ) {
-                m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() + 
-                    "  It does not support deltaNeutral parameters: OpenClose, ShortSale, ShortSaleSlot, DesignatedLocation.");
-                return;
-        }
-    }
-
-    if (m_serverVersion < MIN_SERVER_VER_SCALE_ORDERS3) {
-        if (order.scalePriceIncrement > 0 && order.scalePriceIncrement != UNSET_DOUBLE) {
-            if (order.scalePriceAdjustValue != UNSET_DOUBLE 
-                || order.scalePriceAdjustInterval != UNSET_INTEGER 
-                || order.scaleProfitOffset != UNSET_DOUBLE 
-                || order.scaleAutoReset 
-                || order.scaleInitPosition != UNSET_INTEGER 
-                || order.scaleInitFillQty != UNSET_INTEGER 
-                || order.scaleRandomPercent) {
-                    m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                        "  It does not support Scale order parameters: PriceAdjustValue, PriceAdjustInterval, " +
-                        "ProfitOffset, AutoReset, InitPosition, InitFillQty and RandomPercent");
-                    return;
-            }
-        }
-    }
-
-    if (m_serverVersion < MIN_SERVER_VER_ORDER_COMBO_LEGS_PRICE && contract.secType == "BAG") {
-        const Order::OrderComboLegList* const orderComboLegs = order.orderComboLegs.get();
-        const int orderComboLegsCount = orderComboLegs ? orderComboLegs->size() : 0;
-        for( int i = 0; i < orderComboLegsCount; ++i) {
-            const OrderComboLeg* orderComboLeg = ((*orderComboLegs)[i]).get();
-            assert( orderComboLeg);
-            if( orderComboLeg->price != UNSET_DOUBLE) {
-                m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                    "  It does not support per-leg prices for order combo legs.");
-                return;
-            }
-        }
-    }
-
-    if (m_serverVersion < MIN_SERVER_VER_TRAILING_PERCENT) {
-        if (order.trailingPercent != UNSET_DOUBLE) {
-            m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support trailing percent parameter");
-            return;
-        }
-    }
-
-    if (m_serverVersion < MIN_SERVER_VER_TRADING_CLASS) {
-        if( !contract.tradingClass.empty()) {
-            m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support tradingClass parameter in placeOrder.");
-            return;
-        }
-    }
-
-    if (m_serverVersion < MIN_SERVER_VER_SCALE_TABLE) {
-        if( !order.scaleTable.empty() || !order.activeStartTime.empty() || !order.activeStopTime.empty()) {
-            m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support scaleTable, activeStartTime and activeStopTime parameters");
-            return;
-        }
-    }
-
-    if (m_serverVersion < MIN_SERVER_VER_ALGO_ID) {
-        if( !order.algoId.empty()) {
-            m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support algoId parameter");
-            return;
-        }
-    }
-
-    if (m_serverVersion < MIN_SERVER_VER_ORDER_SOLICITED) {
-        if (order.solicited) {
-            m_pEWrapper->error(id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support order solicited parameter.");
-            return;
-        }
-    }
-
-    if (m_serverVersion < MIN_SERVER_VER_MODELS_SUPPORT) {
-        if( !order.modelCode.empty()) {
-            m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support model code parameter.");
-            return;
-        }
-    }
-
-    if (m_serverVersion < MIN_SERVER_VER_EXT_OPERATOR) {
-        if( !order.extOperator.empty()) {
-            m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support ext operator parameter");
-            return;
-        }
-    }
-
-    if (m_serverVersion < MIN_SERVER_VER_SOFT_DOLLAR_TIER) 
+    if ( m_serverVersion < MIN_SERVER_VER_PLACE_ORDER_CONID ) 
     {
-        if (!order.softDollarTier.name().empty() || !order.softDollarTier.val().empty())
+     
+        if( contract.conId > 0 ) 
         {
-            m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                " It does not support soft dollar tier");
+
+            m_pEWrapper->error(             id, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + "  It does not support conId parameter.");
+            
+            return;
+        
+        }
+
+    }
+
+    if ( m_serverVersion < MIN_SERVER_VER_SSHORTX ) 
+    {
+
+        if( order.exemptCode != -1 ) 
+        {
+
+            m_pEWrapper->error(             id, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + "  It does not support exemptCode parameter.");
+            
+            return;
+
+        }
+
+    }
+
+    if ( m_serverVersion < MIN_SERVER_VER_SSHORTX ) 
+    {
+
+        const Contract::ComboLegList* const comboLegs = contract.comboLegs.get();
+        
+        const int comboLegsCount = comboLegs ? comboLegs->size() : 0;
+        
+        for( int i = 0; i < comboLegsCount; ++i ) 
+        {
+
+            const ComboLeg* comboLeg = ( (*comboLegs)[ i ] ).get();
+            
+            assert(  comboLeg  );
+            
+            if( comboLeg->exemptCode != -1 )
+            {
+
+                m_pEWrapper->error(             id, 
+                                                UPDATE_TWS.code(), 
+                                                UPDATE_TWS.msg() + "  It does not support exemptCode parameter.");
+        
+                return;
+            }
+
+        }
+
+    }
+
+    if( m_serverVersion < MIN_SERVER_VER_HEDGE_ORDERS ) 
+    {
+    
+        if( !order.hedgeType.empty() ) 
+        {
+        
+            m_pEWrapper->error(             id, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + "  It does not support hedge orders.");
+        
+            return;
+
+        }
+    
+    }
+
+    if( m_serverVersion < MIN_SERVER_VER_OPT_OUT_SMART_ROUTING ) 
+    {
+
+        if ( order.optOutSmartRouting ) 
+        {
+
+            m_pEWrapper->error(             id, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + "  It does not support optOutSmartRouting parameter.");
+            
+            return;
+
+        }
+
+    }
+
+    if ( m_serverVersion < MIN_SERVER_VER_DELTA_NEUTRAL_CONID ) 
+    {
+
+        if (        order.deltaNeutralConId > 0 
+                || !order.deltaNeutralSettlingFirm.empty()
+                || !order.deltaNeutralClearingAccount.empty()
+                || !order.deltaNeutralClearingIntent.empty()        ) 
+        {
+
+                m_pEWrapper->error(             id, 
+                                                UPDATE_TWS.code(), 
+                                                UPDATE_TWS.msg() + "  It does not support deltaNeutral parameters: ConId, SettlingFirm, ClearingAccount, ClearingIntent.");
+                
+                return;
+        
+        }
+
+    }
+
+    if ( m_serverVersion < MIN_SERVER_VER_DELTA_NEUTRAL_OPEN_CLOSE ) 
+    {
+        if (    !order.deltaNeutralOpenClose.empty()
+             ||  order.deltaNeutralShortSale
+             ||  order.deltaNeutralShortSaleSlot > 0 
+             || !order.deltaNeutralDesignatedLocation.empty()   ) 
+        {
+
+                m_pEWrapper->error(             id, 
+                                                UPDATE_TWS.code(), 
+                                                UPDATE_TWS.msg() + "  It does not support deltaNeutral parameters: OpenClose, ShortSale, ShortSaleSlot, DesignatedLocation.");
+            
+                return;
+        
+        }
+
+    }
+
+    if ( m_serverVersion < MIN_SERVER_VER_SCALE_ORDERS3 ) 
+    {
+
+        if ( order.scalePriceIncrement > 0 && order.scalePriceIncrement != UNSET_DOUBLE) 
+        {
+
+            if (    order.scalePriceAdjustValue     != UNSET_DOUBLE 
+                 || order.scalePriceAdjustInterval  != UNSET_INTEGER 
+                 || order.scaleProfitOffset         != UNSET_DOUBLE 
+                 || order.scaleAutoReset 
+                 || order.scaleInitPosition         != UNSET_INTEGER 
+                 || order.scaleInitFillQty          != UNSET_INTEGER 
+                 || order.scaleRandomPercent   ) 
+                 {
+
+                    m_pEWrapper->error(             id, 
+                                                    UPDATE_TWS.code(), 
+                                                    UPDATE_TWS.msg() +
+                                                    "  It does not support Scale order parameters: PriceAdjustValue, PriceAdjustInterval, " +
+                                                    "ProfitOffset, AutoReset, InitPosition, InitFillQty and RandomPercent");
+        
+                    return;
+        
+            }
+
+        }
+
+    }
+
+    if ( m_serverVersion < MIN_SERVER_VER_ORDER_COMBO_LEGS_PRICE && contract.secType == "BAG" ) 
+    {
+    
+        const Order::OrderComboLegList* const orderComboLegs = order.orderComboLegs.get();
+    
+        const int orderComboLegsCount = orderComboLegs ? orderComboLegs->size() : 0;
+    
+        for( int i = 0; i < orderComboLegsCount; ++i ) 
+        {
+        
+            const OrderComboLeg* orderComboLeg = ((*orderComboLegs)[ i ]).get();
+        
+            assert( orderComboLeg );
+        
+            if( orderComboLeg->price != UNSET_DOUBLE ) 
+            {
+            
+                m_pEWrapper->error(             id, 
+                                                UPDATE_TWS.code(), 
+                                                UPDATE_TWS.msg() + "  It does not support per-leg prices for order combo legs.");
+                
+                return;
+
+            }
+
+        }
+
+    }
+
+    if ( m_serverVersion < MIN_SERVER_VER_TRAILING_PERCENT ) 
+    {
+    
+        if (order.trailingPercent != UNSET_DOUBLE ) 
+        {
+
+            m_pEWrapper->error(             id, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + "  It does not support trailing percent parameter");
+            
             return;
         }
+
     }
 
-    if (m_serverVersion < MIN_SERVER_VER_CASH_QTY) {
-        if (order.cashQty != UNSET_DOUBLE) {
-            m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support cash quantity parameter");
+    if ( m_serverVersion < MIN_SERVER_VER_TRADING_CLASS ) 
+    {
+
+        if( !contract.tradingClass.empty() ) 
+        {
+
+            m_pEWrapper->error(             id, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + "  It does not support tradingClass parameter in placeOrder.");
+            
             return;
+        
         }
+
     }
 
-    if (m_serverVersion < MIN_SERVER_VER_DECISION_MAKER
-        && (!order.mifid2DecisionMaker.empty()
-        || !order.mifid2DecisionAlgo.empty())) {
-            m_pEWrapper->error(id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                " It does not support MIFID II decision maker parameters");
+    if ( m_serverVersion < MIN_SERVER_VER_SCALE_TABLE ) 
+    {
+
+        if( !order.scaleTable.empty() || !order.activeStartTime.empty() || !order.activeStopTime.empty() ) 
+        {
+
+            m_pEWrapper->error(             id, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + "  It does not support scaleTable, activeStartTime and activeStopTime parameters");
+        
+            return;
+
+        }
+
+    }
+
+    if (m_serverVersion < MIN_SERVER_VER_ALGO_ID) 
+    {
+    
+        if( !order.algoId.empty()) 
+        {
+
+            m_pEWrapper->error(             id, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + "  It does not support algoId parameter");
+            
+            return;
+
+        }
+    
+    }
+
+    if ( m_serverVersion < MIN_SERVER_VER_ORDER_SOLICITED ) 
+    {
+
+        if ( order.solicited ) 
+        {
+
+            m_pEWrapper->error(             id, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + "  It does not support order solicited parameter.");
+            
+            return;
+        
+        }
+    
+    }
+
+    if (m_serverVersion < MIN_SERVER_VER_MODELS_SUPPORT) 
+    {
+
+        if( !order.modelCode.empty() ) 
+        {
+
+            m_pEWrapper->error(             id, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + "  It does not support model code parameter.");
+        
+            return;
+
+        }
+
+    }
+
+    if ( m_serverVersion < MIN_SERVER_VER_EXT_OPERATOR ) 
+    {
+    
+        if( !order.extOperator.empty() ) 
+        {
+
+            m_pEWrapper->error(             id, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + "  It does not support ext operator parameter");
+            
+            return;
+        
+        }
+    
+    }
+
+    if ( m_serverVersion < MIN_SERVER_VER_SOFT_DOLLAR_TIER ) 
+    {
+
+        if ( !order.softDollarTier.name().empty() || !order.softDollarTier.val().empty() )
+        {
+
+            m_pEWrapper->error(             id,         
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + " It does not support soft dollar tier");
+            
+            return;
+
+        }
+
+    }
+
+    if ( m_serverVersion < MIN_SERVER_VER_CASH_QTY ) 
+    {
+    
+        if ( order.cashQty != UNSET_DOUBLE ) 
+        {
+
+            m_pEWrapper->error(             id, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + "  It does not support cash quantity parameter");
+            
+            return;
+        
+        }
+
+    }
+
+    if ( m_serverVersion < MIN_SERVER_VER_DECISION_MAKER
+         && (!order.mifid2DecisionMaker.empty()
+         || !order.mifid2DecisionAlgo.empty() ) ) 
+    {
+
+            m_pEWrapper->error(             id, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + " It does not support MIFID II decision maker parameters");
+    
+            return;
+    
+    }
+
+    if ( m_serverVersion < MIN_SERVER_VER_MIFID_EXECUTION
+         && (!order.mifid2ExecutionTrader.empty()
+         || !order.mifid2ExecutionAlgo.empty() ) ) 
+    {
+
+            m_pEWrapper->error(             id, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + " It does not support MIFID II execution parameters");
+        
             return;
     }
 
-    if (m_serverVersion < MIN_SERVER_VER_MIFID_EXECUTION
-        && (!order.mifid2ExecutionTrader.empty()
-        || !order.mifid2ExecutionAlgo.empty())) {
-            m_pEWrapper->error(id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                " It does not support MIFID II execution parameters");
+    if ( m_serverVersion < MIN_SERVER_VER_AUTO_PRICE_FOR_HEDGE
+        && order.dontUseAutoPriceForHedge ) 
+    {
+
+            m_pEWrapper->error(             id, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + " It does not support don't use auto price for hedge parameter");
+            
             return;
+
     }
 
-    if (m_serverVersion < MIN_SERVER_VER_AUTO_PRICE_FOR_HEDGE
-        && order.dontUseAutoPriceForHedge) {
-            m_pEWrapper->error(id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                " It does not support don't use auto price for hedge parameter");
+    if ( m_serverVersion < MIN_SERVER_VER_ORDER_CONTAINER 
+         && order.isOmsContainer ) 
+    {
+
+            m_pEWrapper->error(             id, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + " It does not support oms container parameter");
+            
             return;
+
     }
 
-    if (m_serverVersion < MIN_SERVER_VER_ORDER_CONTAINER 
-        && order.isOmsContainer) {
-            m_pEWrapper->error(id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                " It does not support oms container parameter");
+    if ( m_serverVersion < MIN_SERVER_VER_D_PEG_ORDERS 
+         && order.discretionaryUpToLimitPrice ) 
+    {
+            
+            m_pEWrapper->error(             id, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + " It does not support D-Peg orders");
+            
             return;
+    
     }
 
-    if (m_serverVersion < MIN_SERVER_VER_D_PEG_ORDERS 
-        && order.discretionaryUpToLimitPrice) {
-            m_pEWrapper->error(id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                " It does not support D-Peg orders");
-            return;
-    }
+    if ( m_serverVersion < MIN_SERVER_VER_PRICE_MGMT_ALGO
+         && order.usePriceMgmtAlgo != UsePriceMmgtAlgo::DEFAULT ) 
+    {
 
-    if (m_serverVersion < MIN_SERVER_VER_PRICE_MGMT_ALGO
-        && order.usePriceMgmtAlgo != UsePriceMmgtAlgo::DEFAULT) {
-            m_pEWrapper->error(id, UPDATE_TWS.code(), UPDATE_TWS.msg() + " It does not support Use Price Management Algo requests");
+            m_pEWrapper->error(             id, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + " It does not support Use Price Management Algo requests");
 
             return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
 
-    try {
+    prepareBuffer(  msg  );
+
+    try 
+    {
             
         int VERSION = ( m_serverVersion < MIN_SERVER_VER_NOT_HELD ) ? 27 : 45;
 
         // send place order msg
-        ENCODE_FIELD( PLACE_ORDER );
+        ENCODE_FIELD(           PLACE_ORDER                 );
 
         if ( m_serverVersion < MIN_SERVER_VER_ORDER_CONTAINER ) 
         {
-            ENCODE_FIELD( VERSION );
+            ENCODE_FIELD(           VERSION                     );
         }
 
         ENCODE_FIELD( id );
@@ -1909,128 +2218,174 @@ void EClient::placeOrder(               OrderId             id,
         // send contract fields
         if( m_serverVersion >= MIN_SERVER_VER_PLACE_ORDER_CONID ) 
         {
-            ENCODE_FIELD( contract.conId);
+            ENCODE_FIELD(           contract.conId              );
         }
 
-        ENCODE_FIELD(       contract.symbol);
-        ENCODE_FIELD(       contract.secType);
-        ENCODE_FIELD(       contract.lastTradeDateOrContractMonth);
-        ENCODE_FIELD(       contract.strike);
-        ENCODE_FIELD(       contract.right);
-        ENCODE_FIELD(       contract.multiplier); // srv v15 and above
-        ENCODE_FIELD(       contract.exchange);
-        ENCODE_FIELD(       contract.primaryExchange); // srv v14 and above
-        ENCODE_FIELD(       contract.currency);
-        ENCODE_FIELD(       contract.localSymbol); // srv v2 and above
+        ENCODE_FIELD(               contract.symbol                         );
+        ENCODE_FIELD(               contract.secType                        );
+        ENCODE_FIELD(               contract.lastTradeDateOrContractMonth   );
+        ENCODE_FIELD(               contract.strike                         );
+        ENCODE_FIELD(               contract.right                          );
+        ENCODE_FIELD(               contract.multiplier                     ); // srv v15 and above
+        ENCODE_FIELD(               contract.exchange                       );
+        ENCODE_FIELD(               contract.primaryExchange                ); // srv v14 and above
+        ENCODE_FIELD(               contract.currency                       );
+        ENCODE_FIELD(               contract.localSymbol                    ); // srv v2 and above
 
-        if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) 
+        if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS ) 
         {
-            ENCODE_FIELD( contract.tradingClass);
+            ENCODE_FIELD(           contract.tradingClass               );
         }
 
-        if( m_serverVersion >= MIN_SERVER_VER_SEC_ID_TYPE){
-            ENCODE_FIELD( contract.secIdType);
-            ENCODE_FIELD( contract.secId);
+        if( m_serverVersion >= MIN_SERVER_VER_SEC_ID_TYPE )
+        {
+            ENCODE_FIELD(           contract.secIdType                  );
+            ENCODE_FIELD(           contract.secId                      );
         }
 
         // send main order fields
-        ENCODE_FIELD( order.action);
+        ENCODE_FIELD(           order.action            );
 
-        if (m_serverVersion >= MIN_SERVER_VER_FRACTIONAL_POSITIONS)
-            ENCODE_FIELD(order.totalQuantity)
+        if ( m_serverVersion >= MIN_SERVER_VER_FRACTIONAL_POSITIONS ) 
+            ENCODE_FIELD(           order.totalQuantity             )
         else
-        ENCODE_FIELD((long)order.totalQuantity)
+            ENCODE_FIELD(     (long)order.totalQuantity             )
 
-        ENCODE_FIELD( order.orderType);
-        if( m_serverVersion < MIN_SERVER_VER_ORDER_COMBO_LEGS_PRICE) {
-            ENCODE_FIELD( order.lmtPrice == UNSET_DOUBLE ? 0 : order.lmtPrice);
+        ENCODE_FIELD(           order.orderType         );
+
+        if( m_serverVersion < MIN_SERVER_VER_ORDER_COMBO_LEGS_PRICE ) 
+        {
+            ENCODE_FIELD(       order.lmtPrice == UNSET_DOUBLE ? 0 : order.lmtPrice     );
         }
-        else {
+        else 
+        {
             ENCODE_FIELD_MAX( order.lmtPrice);
         }
-        if( m_serverVersion < MIN_SERVER_VER_TRAILING_PERCENT) {
-            ENCODE_FIELD( order.auxPrice == UNSET_DOUBLE ? 0 : order.auxPrice);
+        
+        if( m_serverVersion < MIN_SERVER_VER_TRAILING_PERCENT ) 
+        {
+            ENCODE_FIELD(       order.auxPrice == UNSET_DOUBLE ? 0 : order.auxPrice     );
         }
-        else {
-            ENCODE_FIELD_MAX( order.auxPrice);
+        else 
+        {
+            ENCODE_FIELD_MAX(           order.auxPrice              );
         }
 
         // send extended order fields
-        ENCODE_FIELD( order.tif);
-        ENCODE_FIELD( order.ocaGroup);
-        ENCODE_FIELD( order.account);
-        ENCODE_FIELD( order.openClose);
-        ENCODE_FIELD( order.origin);
-        ENCODE_FIELD( order.orderRef);
-        ENCODE_FIELD( order.transmit);
-        ENCODE_FIELD( order.parentId); // srv v4 and above
+        ENCODE_FIELD(           order.tif                       );
+        ENCODE_FIELD(           order.ocaGroup                  );
+        ENCODE_FIELD(           order.account                   );
+        ENCODE_FIELD(           order.openClose                 );
+        ENCODE_FIELD(           order.origin                    );
+        ENCODE_FIELD(           order.orderRef                  );
+        ENCODE_FIELD(           order.transmit                  );
+        ENCODE_FIELD(           order.parentId                  ); // srv v4 and above
 
-        ENCODE_FIELD( order.blockOrder); // srv v5 and above
-        ENCODE_FIELD( order.sweepToFill); // srv v5 and above
-        ENCODE_FIELD( order.displaySize); // srv v5 and above
-        ENCODE_FIELD( order.triggerMethod); // srv v5 and above
+        ENCODE_FIELD(           order.blockOrder                ); // srv v5 and above
+        ENCODE_FIELD(           order.sweepToFill               ); // srv v5 and above
+        ENCODE_FIELD(           order.displaySize               ); // srv v5 and above
+        ENCODE_FIELD(           order.triggerMethod             ); // srv v5 and above
 
         //if( m_serverVersion < 38) {
         // will never happen
         //	ENCODE_FIELD(/* order.ignoreRth */ false);
         //}
         //else {
-        ENCODE_FIELD( order.outsideRth); // srv v5 and above
+        ENCODE_FIELD(           order.outsideRth                ); // srv v5 and above
         //}
 
-        ENCODE_FIELD( order.hidden); // srv v7 and above
+        ENCODE_FIELD(           order.hidden                    ); // srv v7 and above
 
         // Send combo legs for BAG requests (srv v8 and above)
-        if( contract.secType == "BAG")
+        if( contract.secType == "BAG" )
         {
-            const Contract::ComboLegList* const comboLegs = contract.comboLegs.get();
-            const int comboLegsCount = comboLegs ? comboLegs->size() : 0;
-            ENCODE_FIELD( comboLegsCount);
-            if( comboLegsCount > 0) {
-                for( int i = 0; i < comboLegsCount; ++i) {
-                    const ComboLeg* comboLeg = ((*comboLegs)[i]).get();
-                    assert( comboLeg);
-                    ENCODE_FIELD( comboLeg->conId);
-                    ENCODE_FIELD( comboLeg->ratio);
-                    ENCODE_FIELD( comboLeg->action);
-                    ENCODE_FIELD( comboLeg->exchange);
-                    ENCODE_FIELD( comboLeg->openClose);
 
-                    ENCODE_FIELD( comboLeg->shortSaleSlot); // srv v35 and above
-                    ENCODE_FIELD( comboLeg->designatedLocation); // srv v35 and above
-                    if (m_serverVersion >= MIN_SERVER_VER_SSHORTX_OLD) { 
-                        ENCODE_FIELD( comboLeg->exemptCode);
+            const Contract::ComboLegList* const comboLegs = contract.comboLegs.get();
+            
+            const int comboLegsCount = comboLegs ? comboLegs->size() : 0;
+            
+            ENCODE_FIELD(           comboLegsCount          );
+            
+            if( comboLegsCount > 0 ) 
+            {
+
+                for( int i = 0; i < comboLegsCount; ++i) 
+                {
+
+                    const ComboLeg* comboLeg = ( (*comboLegs)[ i ] ).get();
+                    
+                    assert(  comboLeg  );
+
+                    ENCODE_FIELD(           comboLeg->conId                     );
+                    ENCODE_FIELD(           comboLeg->ratio                     );
+                    ENCODE_FIELD(           comboLeg->action                    );
+                    ENCODE_FIELD(           comboLeg->exchange                  );
+                    ENCODE_FIELD(           comboLeg->openClose                 );
+
+                    ENCODE_FIELD(           comboLeg->shortSaleSlot             ); // srv v35 and above
+                    ENCODE_FIELD(           comboLeg->designatedLocation        ); // srv v35 and above
+                    
+                    if ( m_serverVersion >= MIN_SERVER_VER_SSHORTX_OLD ) 
+                    { 
+                        ENCODE_FIELD(           comboLeg->exemptCode            );
                     }
+
                 }
+
             }
+
         }
 
         // Send order combo legs for BAG requests
-        if( m_serverVersion >= MIN_SERVER_VER_ORDER_COMBO_LEGS_PRICE && contract.secType == "BAG")
+        if( m_serverVersion >= MIN_SERVER_VER_ORDER_COMBO_LEGS_PRICE && contract.secType == "BAG" )
         {
+
             const Order::OrderComboLegList* const orderComboLegs = order.orderComboLegs.get();
+            
             const int orderComboLegsCount = orderComboLegs ? orderComboLegs->size() : 0;
-            ENCODE_FIELD( orderComboLegsCount);
-            if( orderComboLegsCount > 0) {
-                for( int i = 0; i < orderComboLegsCount; ++i) {
-                    const OrderComboLeg* orderComboLeg = ((*orderComboLegs)[i]).get();
-                    assert( orderComboLeg);
-                    ENCODE_FIELD_MAX( orderComboLeg->price);
+            
+            ENCODE_FIELD(           orderComboLegsCount             );
+            
+            if( orderComboLegsCount > 0 ) 
+            {
+            
+                for( int i = 0; i < orderComboLegsCount; ++i ) 
+                {
+
+                    const OrderComboLeg* orderComboLeg = ( (*orderComboLegs)[ i ] ).get();
+            
+                    assert(  orderComboLeg  );
+            
+                    ENCODE_FIELD_MAX(           orderComboLeg->price            );
+            
                 }
+
             }
+
         }	
 
-        if( m_serverVersion >= MIN_SERVER_VER_SMART_COMBO_ROUTING_PARAMS && contract.secType == "BAG") {
+        if( m_serverVersion >= MIN_SERVER_VER_SMART_COMBO_ROUTING_PARAMS && contract.secType == "BAG" ) 
+        {
+
             const TagValueList* const smartComboRoutingParams = order.smartComboRoutingParams.get();
+            
             const int smartComboRoutingParamsCount = smartComboRoutingParams ? smartComboRoutingParams->size() : 0;
+            
             ENCODE_FIELD( smartComboRoutingParamsCount);
-            if( smartComboRoutingParamsCount > 0) {
-                for( int i = 0; i < smartComboRoutingParamsCount; ++i) {
-                    const TagValue* tagValue = ((*smartComboRoutingParams)[i]).get();
-                    ENCODE_FIELD( tagValue->tag);
-                    ENCODE_FIELD( tagValue->value);
+            
+            if( smartComboRoutingParamsCount > 0 ) 
+            {
+            
+                for( int i = 0; i < smartComboRoutingParamsCount; ++i ) 
+                {
+                    const TagValue* tagValue = ( (*smartComboRoutingParams)[ i ] ).get();
+                    
+                    ENCODE_FIELD(           tagValue->tag               );
+                    ENCODE_FIELD(           tagValue->value             );
                 }
+
             }
+
         }
 
         /////////////////////////////////////////////////////////////////////////////
@@ -2047,85 +2402,96 @@ void EClient::placeOrder(               OrderId             id,
         /////////////////////////////////////////////////////////////////////////////
         {
             // send deprecated sharesAllocation field
-            ENCODE_FIELD( ""); // srv v9 and above
+            ENCODE_FIELD(           ""                                  ); // srv v9 and above
         }
 
-        ENCODE_FIELD( order.discretionaryAmt); // srv v10 and above
-        ENCODE_FIELD( order.goodAfterTime); // srv v11 and above
-        ENCODE_FIELD( order.goodTillDate); // srv v12 and above
+        ENCODE_FIELD(               order.discretionaryAmt              ); // srv v10 and above
+        ENCODE_FIELD(               order.goodAfterTime                 ); // srv v11 and above
+        ENCODE_FIELD(               order.goodTillDate                  ); // srv v12 and above
 
-        ENCODE_FIELD( order.faGroup); // srv v13 and above
-        ENCODE_FIELD( order.faMethod); // srv v13 and above
-        ENCODE_FIELD( order.faPercentage); // srv v13 and above
-        ENCODE_FIELD( order.faProfile); // srv v13 and above
+        ENCODE_FIELD(               order.faGroup                       ); // srv v13 and above
+        ENCODE_FIELD(               order.faMethod                      ); // srv v13 and above
+        ENCODE_FIELD(               order.faPercentage                  ); // srv v13 and above
+        ENCODE_FIELD(               order.faProfile                     ); // srv v13 and above
 
-        if (m_serverVersion >= MIN_SERVER_VER_MODELS_SUPPORT) {
-            ENCODE_FIELD( order.modelCode);
+        if ( m_serverVersion >= MIN_SERVER_VER_MODELS_SUPPORT ) 
+        {
+            ENCODE_FIELD(           order.modelCode                     );
         }
 
         // institutional short saleslot data (srv v18 and above)
-        ENCODE_FIELD( order.shortSaleSlot);      // 0 for retail, 1 or 2 for institutions
-        ENCODE_FIELD( order.designatedLocation); // populate only when shortSaleSlot = 2.
-        if (m_serverVersion >= MIN_SERVER_VER_SSHORTX_OLD) { 
-            ENCODE_FIELD( order.exemptCode);
+        ENCODE_FIELD(               order.shortSaleSlot                 );      // 0 for retail, 1 or 2 for institutions
+        ENCODE_FIELD(               order.designatedLocation            ); // populate only when shortSaleSlot = 2.
+        
+        if ( m_serverVersion >= MIN_SERVER_VER_SSHORTX_OLD ) 
+        { 
+            ENCODE_FIELD(           order.exemptCode                    );
         }
 
         // not needed anymore
         //bool isVolOrder = (order.orderType.CompareNoCase("VOL") == 0);
 
         // srv v19 and above fields
-        ENCODE_FIELD( order.ocaType);
+        ENCODE_FIELD(               order.ocaType                       );
         //if( m_serverVersion < 38) {
         // will never happen
         //	send( /* order.rthOnly */ false);
         //}
-        ENCODE_FIELD( order.rule80A);
-        ENCODE_FIELD( order.settlingFirm);
-        ENCODE_FIELD( order.allOrNone);
-        ENCODE_FIELD_MAX( order.minQty);
-        ENCODE_FIELD_MAX( order.percentOffset);
-        ENCODE_FIELD( order.eTradeOnly);
-        ENCODE_FIELD( order.firmQuoteOnly);
-        ENCODE_FIELD_MAX( order.nbboPriceCap);
-        ENCODE_FIELD( order.auctionStrategy); // AUCTION_MATCH, AUCTION_IMPROVEMENT, AUCTION_TRANSPARENT
-        ENCODE_FIELD_MAX( order.startingPrice);
-        ENCODE_FIELD_MAX( order.stockRefPrice);
-        ENCODE_FIELD_MAX( order.delta);
+        ENCODE_FIELD(               order.rule80A                       );
+        ENCODE_FIELD(               order.settlingFirm                  );
+        ENCODE_FIELD(               order.allOrNone                     );
+
+        ENCODE_FIELD_MAX(           order.minQty                        );
+        ENCODE_FIELD_MAX(           order.percentOffset                 );
+        
+        ENCODE_FIELD(               order.eTradeOnly                    );
+        ENCODE_FIELD(               order.firmQuoteOnly                 );
+        
+        ENCODE_FIELD_MAX(           order.nbboPriceCap                  );
+        
+        ENCODE_FIELD(               order.auctionStrategy               ); // AUCTION_MATCH, AUCTION_IMPROVEMENT, AUCTION_TRANSPARENT
+        
+        ENCODE_FIELD_MAX(           order.startingPrice                 );
+        ENCODE_FIELD_MAX(           order.stockRefPrice                 );
+        ENCODE_FIELD_MAX(           order.delta                         );
+
         // Volatility orders had specific watermark price attribs in server version 26
         //double lower = (m_serverVersion == 26 && isVolOrder) ? DBL_MAX : order.stockRangeLower;
         //double upper = (m_serverVersion == 26 && isVolOrder) ? DBL_MAX : order.stockRangeUpper;
-        ENCODE_FIELD_MAX( order.stockRangeLower);
-        ENCODE_FIELD_MAX( order.stockRangeUpper);
+        ENCODE_FIELD_MAX(           order.stockRangeLower);
+        ENCODE_FIELD_MAX(           order.stockRangeUpper);
 
-        ENCODE_FIELD( order.overridePercentageConstraints); // srv v22 and above
+        ENCODE_FIELD(               order.overridePercentageConstraints); // srv v22 and above
 
         // Volatility orders (srv v26 and above)
-        ENCODE_FIELD_MAX( order.volatility);
-        ENCODE_FIELD_MAX( order.volatilityType);
+        ENCODE_FIELD_MAX(           order.volatility);
+        ENCODE_FIELD_MAX(           order.volatilityType);
         // will never happen
         //if( m_serverVersion < 28) {
         //	send( order.deltaNeutralOrderType.CompareNoCase("MKT") == 0);
         //}
         //else {
-        ENCODE_FIELD( order.deltaNeutralOrderType); // srv v28 and above
-        ENCODE_FIELD_MAX( order.deltaNeutralAuxPrice); // srv v28 and above
+        ENCODE_FIELD(               order.deltaNeutralOrderType                     ); // srv v28 and above
+        ENCODE_FIELD_MAX(           order.deltaNeutralAuxPrice                      ); // srv v28 and above
 
-        if (m_serverVersion >= MIN_SERVER_VER_DELTA_NEUTRAL_CONID && !order.deltaNeutralOrderType.empty()){
-            ENCODE_FIELD( order.deltaNeutralConId);
-            ENCODE_FIELD( order.deltaNeutralSettlingFirm);
-            ENCODE_FIELD( order.deltaNeutralClearingAccount);
-            ENCODE_FIELD( order.deltaNeutralClearingIntent);
+        if ( m_serverVersion >= MIN_SERVER_VER_DELTA_NEUTRAL_CONID && !order.deltaNeutralOrderType.empty() )
+        {
+            ENCODE_FIELD(           order.deltaNeutralConId                         );
+            ENCODE_FIELD(           order.deltaNeutralSettlingFirm                  );
+            ENCODE_FIELD(           order.deltaNeutralClearingAccount               );
+            ENCODE_FIELD(           order.deltaNeutralClearingIntent                );
         }
 
-        if (m_serverVersion >= MIN_SERVER_VER_DELTA_NEUTRAL_OPEN_CLOSE && !order.deltaNeutralOrderType.empty()){
-            ENCODE_FIELD( order.deltaNeutralOpenClose);
-            ENCODE_FIELD( order.deltaNeutralShortSale);
-            ENCODE_FIELD( order.deltaNeutralShortSaleSlot);
-            ENCODE_FIELD( order.deltaNeutralDesignatedLocation);
+        if ( m_serverVersion >= MIN_SERVER_VER_DELTA_NEUTRAL_OPEN_CLOSE && !order.deltaNeutralOrderType.empty() )
+        {
+            ENCODE_FIELD(           order.deltaNeutralOpenClose                     );
+            ENCODE_FIELD(           order.deltaNeutralShortSale                     );
+            ENCODE_FIELD(           order.deltaNeutralShortSaleSlot                 );
+            ENCODE_FIELD(           order.deltaNeutralDesignatedLocation            );
         }
 
         //}
-        ENCODE_FIELD( order.continuousUpdate);
+        ENCODE_FIELD(               order.continuousUpdate              );
         //if( m_serverVersion == 26) {
         //	// Volatility orders had specific watermark price attribs in server version 26
         //	double lower = (isVolOrder ? order.stockRangeLower : DBL_MAX);
@@ -2133,184 +2499,245 @@ void EClient::placeOrder(               OrderId             id,
         //	ENCODE_FIELD_MAX( lower);
         //	ENCODE_FIELD_MAX( upper);
         //}
-        ENCODE_FIELD_MAX( order.referencePriceType);
+        ENCODE_FIELD_MAX(           order.referencePriceType            );
 
-        ENCODE_FIELD_MAX( order.trailStopPrice); // srv v30 and above
+        ENCODE_FIELD_MAX(           order.trailStopPrice                ); // srv v30 and above
 
-        if( m_serverVersion >= MIN_SERVER_VER_TRAILING_PERCENT) {
-            ENCODE_FIELD_MAX( order.trailingPercent);
+        if( m_serverVersion >= MIN_SERVER_VER_TRAILING_PERCENT ) 
+        {
+            ENCODE_FIELD_MAX(           order.trailingPercent               );
         }
 
         // SCALE orders
-        if( m_serverVersion >= MIN_SERVER_VER_SCALE_ORDERS2) {
-            ENCODE_FIELD_MAX( order.scaleInitLevelSize);
-            ENCODE_FIELD_MAX( order.scaleSubsLevelSize);
+        if( m_serverVersion >= MIN_SERVER_VER_SCALE_ORDERS2 ) 
+        {
+            ENCODE_FIELD_MAX(           order.scaleInitLevelSize            );
+            ENCODE_FIELD_MAX(           order.scaleSubsLevelSize            );
         }
-        else {
+        else 
+        {
             // srv v35 and above)
-            ENCODE_FIELD( ""); // for not supported scaleNumComponents
-            ENCODE_FIELD_MAX( order.scaleInitLevelSize); // for scaleComponentSize
+            ENCODE_FIELD(               ""                                  ); // for not supported scaleNumComponents
+            ENCODE_FIELD_MAX(           order.scaleInitLevelSize            ); // for scaleComponentSize
         }
 
         ENCODE_FIELD_MAX( order.scalePriceIncrement);
 
         if( m_serverVersion >= MIN_SERVER_VER_SCALE_ORDERS3 
-            && order.scalePriceIncrement > 0.0 && order.scalePriceIncrement != UNSET_DOUBLE) {
-                ENCODE_FIELD_MAX( order.scalePriceAdjustValue);
-                ENCODE_FIELD_MAX( order.scalePriceAdjustInterval);
-                ENCODE_FIELD_MAX( order.scaleProfitOffset);
-                ENCODE_FIELD( order.scaleAutoReset);
-                ENCODE_FIELD_MAX( order.scaleInitPosition);
-                ENCODE_FIELD_MAX( order.scaleInitFillQty);
-                ENCODE_FIELD( order.scaleRandomPercent);
+            && order.scalePriceIncrement > 0.0 && order.scalePriceIncrement != UNSET_DOUBLE ) 
+        {
+
+                ENCODE_FIELD_MAX(           order.scalePriceAdjustValue             );
+                ENCODE_FIELD_MAX(           order.scalePriceAdjustInterval          );
+                ENCODE_FIELD_MAX(           order.scaleProfitOffset                 );
+                
+                ENCODE_FIELD(               order.scaleAutoReset                    );
+                
+                ENCODE_FIELD_MAX(           order.scaleInitPosition                 );
+                ENCODE_FIELD_MAX(           order.scaleInitFillQty                  );
+                
+                ENCODE_FIELD(               order.scaleRandomPercent                );
+        
         }
 
-        if( m_serverVersion >= MIN_SERVER_VER_SCALE_TABLE) {
-            ENCODE_FIELD( order.scaleTable);
-            ENCODE_FIELD( order.activeStartTime);
-            ENCODE_FIELD( order.activeStopTime);
+        if( m_serverVersion >= MIN_SERVER_VER_SCALE_TABLE ) 
+        {
+            ENCODE_FIELD(           order.scaleTable                );
+            ENCODE_FIELD(           order.activeStartTime           );
+            ENCODE_FIELD(           order.activeStopTime            );
         }
 
         // HEDGE orders
-        if( m_serverVersion >= MIN_SERVER_VER_HEDGE_ORDERS) {
-            ENCODE_FIELD( order.hedgeType);
-            if ( !order.hedgeType.empty()) {
-                ENCODE_FIELD( order.hedgeParam);
+        if( m_serverVersion >= MIN_SERVER_VER_HEDGE_ORDERS ) 
+        {
+        
+            ENCODE_FIELD(           order.hedgeType                 );
+        
+            if ( !order.hedgeType.empty() ) 
+            {
+                ENCODE_FIELD(           order.hedgeParam            );
             }
         }
 
-        if( m_serverVersion >= MIN_SERVER_VER_OPT_OUT_SMART_ROUTING){
-            ENCODE_FIELD( order.optOutSmartRouting);
+        if( m_serverVersion >= MIN_SERVER_VER_OPT_OUT_SMART_ROUTING )
+        {
+            ENCODE_FIELD(           order.optOutSmartRouting        );
         }
 
-        if( m_serverVersion >= MIN_SERVER_VER_PTA_ORDERS) {
-            ENCODE_FIELD( order.clearingAccount);
-            ENCODE_FIELD( order.clearingIntent);
+        if( m_serverVersion >= MIN_SERVER_VER_PTA_ORDERS ) 
+        {
+            ENCODE_FIELD(           order.clearingAccount           );
+            ENCODE_FIELD(           order.clearingIntent            );
         }
 
-        if( m_serverVersion >= MIN_SERVER_VER_NOT_HELD){
-            ENCODE_FIELD( order.notHeld);
+        if( m_serverVersion >= MIN_SERVER_VER_NOT_HELD )
+        {
+            ENCODE_FIELD(           order.notHeld                   );
         }
 
-        if( m_serverVersion >= MIN_SERVER_VER_DELTA_NEUTRAL) {
-            if( contract.deltaNeutralContract) {
+        if( m_serverVersion >= MIN_SERVER_VER_DELTA_NEUTRAL ) 
+        {
+
+            if( contract.deltaNeutralContract ) 
+            {
+
                 const DeltaNeutralContract& deltaNeutralContract = *contract.deltaNeutralContract;
-                ENCODE_FIELD( true);
-                ENCODE_FIELD( deltaNeutralContract.conId);
-                ENCODE_FIELD( deltaNeutralContract.delta);
-                ENCODE_FIELD( deltaNeutralContract.price);
+                
+                ENCODE_FIELD(           true                                    );
+                ENCODE_FIELD(           deltaNeutralContract.conId              );
+                ENCODE_FIELD(           deltaNeutralContract.delta              );
+                ENCODE_FIELD(           deltaNeutralContract.price              );
+            
             }
-            else {
-                ENCODE_FIELD( false);
+            else 
+            {
+                ENCODE_FIELD(           false           );
             }
+
         }
 
-        if( m_serverVersion >= MIN_SERVER_VER_ALGO_ORDERS) {
-            ENCODE_FIELD( order.algoStrategy);
+        if( m_serverVersion >= MIN_SERVER_VER_ALGO_ORDERS ) 
+        {
 
-            if( !order.algoStrategy.empty()) {
+            ENCODE_FIELD(           order.algoStrategy              );
+
+            if( !order.algoStrategy.empty() ) 
+            {
+
                 const TagValueList* const algoParams = order.algoParams.get();
+                
                 const int algoParamsCount = algoParams ? algoParams->size() : 0;
-                ENCODE_FIELD( algoParamsCount);
-                if( algoParamsCount > 0) {
-                    for( int i = 0; i < algoParamsCount; ++i) {
-                        const TagValue* tagValue = ((*algoParams)[i]).get();
-                        ENCODE_FIELD( tagValue->tag);
-                        ENCODE_FIELD( tagValue->value);
+                
+                ENCODE_FIELD(           algoParamsCount             );
+                
+                if( algoParamsCount > 0 ) 
+                {
+
+                    for( int i = 0; i < algoParamsCount; ++i ) 
+                    {
+                        const TagValue* tagValue = ( (*algoParams )[ i ]).get();
+                    
+                        ENCODE_FIELD(           tagValue->tag               );
+                        ENCODE_FIELD(           tagValue->value             );
+                    
                     }
+
                 }
+
             }
 
         }
 
-        if( m_serverVersion >= MIN_SERVER_VER_ALGO_ID) {
-            ENCODE_FIELD( order.algoId);
+        if( m_serverVersion >= MIN_SERVER_VER_ALGO_ID ) 
+        {
+            ENCODE_FIELD(           order.algoId            );
         }
 
-        ENCODE_FIELD( order.whatIf); // srv v36 and above
+        ENCODE_FIELD(           order.whatIf            ); // srv v36 and above
 
         // send miscOptions parameter
-        if (m_serverVersion >= MIN_SERVER_VER_LINKING) {
-            ENCODE_TAGVALUELIST(order.orderMiscOptions);
+        if ( m_serverVersion >= MIN_SERVER_VER_LINKING ) 
+        {
+            ENCODE_TAGVALUELIST(            order.orderMiscOptions  );
         }
 
-        if (m_serverVersion >= MIN_SERVER_VER_ORDER_SOLICITED) {
-            ENCODE_FIELD(order.solicited);
+        if ( m_serverVersion >= MIN_SERVER_VER_ORDER_SOLICITED ) 
+        {
+            ENCODE_FIELD(           order.solicited                 );
         }
 
-        if (m_serverVersion >= MIN_SERVER_VER_RANDOMIZE_SIZE_AND_PRICE) {
-            ENCODE_FIELD(order.randomizeSize);
-            ENCODE_FIELD(order.randomizePrice);
+        if ( m_serverVersion >= MIN_SERVER_VER_RANDOMIZE_SIZE_AND_PRICE ) 
+        {
+            ENCODE_FIELD(           order.randomizeSize             );
+            ENCODE_FIELD(           order.randomizePrice            );
         }
 
-        if (m_serverVersion >= MIN_SERVER_VER_PEGGED_TO_BENCHMARK) {
-            if (order.orderType == "PEG BENCH") {
-                ENCODE_FIELD(order.referenceContractId);
-                ENCODE_FIELD(order.isPeggedChangeAmountDecrease);
-                ENCODE_FIELD(order.peggedChangeAmount);
-                ENCODE_FIELD(order.referenceChangeAmount);
-                ENCODE_FIELD(order.referenceExchangeId);
+        if ( m_serverVersion >= MIN_SERVER_VER_PEGGED_TO_BENCHMARK ) 
+        {
+
+            if ( order.orderType == "PEG BENCH" ) 
+            {
+                ENCODE_FIELD(           order.referenceContractId               );
+                ENCODE_FIELD(           order.isPeggedChangeAmountDecrease      );
+                ENCODE_FIELD(           order.peggedChangeAmount                );
+                ENCODE_FIELD(           order.referenceChangeAmount             );
+                ENCODE_FIELD(           order.referenceExchangeId               );
             }
 
-            ENCODE_FIELD(order.conditions.size());
+            ENCODE_FIELD(           order.conditions.size()                     );
 
-            if (order.conditions.size() > 0) {
-                for (std::shared_ptr<OrderCondition> item : order.conditions) {
-                    ENCODE_FIELD(item->type());
-                    item->writeExternal(msg);
+            if ( order.conditions.size() > 0 ) 
+            {
+
+                for ( std::shared_ptr<OrderCondition> item : order.conditions ) 
+                {
+                    ENCODE_FIELD(           item->type()            );
+                    
+                    item->writeExternal(  msg  );
                 }
 
-                ENCODE_FIELD(order.conditionsIgnoreRth);
-                ENCODE_FIELD(order.conditionsCancelOrder);
+                ENCODE_FIELD(           order.conditionsIgnoreRth           );
+                ENCODE_FIELD(           order.conditionsCancelOrder         );
+
             }
 
-            ENCODE_FIELD(order.adjustedOrderType);
-            ENCODE_FIELD(order.triggerPrice);
-            ENCODE_FIELD(order.lmtPriceOffset);
-            ENCODE_FIELD(order.adjustedStopPrice);
-            ENCODE_FIELD(order.adjustedStopLimitPrice);
-            ENCODE_FIELD(order.adjustedTrailingAmount);
-            ENCODE_FIELD(order.adjustableTrailingUnit);
+            ENCODE_FIELD(           order.adjustedOrderType                 );
+            ENCODE_FIELD(           order.triggerPrice                      );
+            ENCODE_FIELD(           order.lmtPriceOffset                    );
+            ENCODE_FIELD(           order.adjustedStopPrice                 );
+            ENCODE_FIELD(           order.adjustedStopLimitPrice            );
+            ENCODE_FIELD(           order.adjustedTrailingAmount            );
+            ENCODE_FIELD(           order.adjustableTrailingUnit            );
         }
 
-        if( m_serverVersion >= MIN_SERVER_VER_EXT_OPERATOR) {
-            ENCODE_FIELD( order.extOperator);
+        if( m_serverVersion >= MIN_SERVER_VER_EXT_OPERATOR ) 
+        {
+            ENCODE_FIELD(           order.extOperator                       );
         }
 
-        if (m_serverVersion >= MIN_SERVER_VER_SOFT_DOLLAR_TIER) {
-            ENCODE_FIELD(order.softDollarTier.name());
-            ENCODE_FIELD(order.softDollarTier.val());
+        if ( m_serverVersion >= MIN_SERVER_VER_SOFT_DOLLAR_TIER ) 
+        {
+            ENCODE_FIELD(           order.softDollarTier.name()             );
+            ENCODE_FIELD(           order.softDollarTier.val()              );
         }
 
-        if (m_serverVersion >= MIN_SERVER_VER_CASH_QTY) {
-            ENCODE_FIELD_MAX( order.cashQty);
+        if ( m_serverVersion >= MIN_SERVER_VER_CASH_QTY ) 
+        {
+            ENCODE_FIELD_MAX(           order.cashQty                       );
         }
 
-        if (m_serverVersion >= MIN_SERVER_VER_DECISION_MAKER) {
-            ENCODE_FIELD(order.mifid2DecisionMaker);
-            ENCODE_FIELD(order.mifid2DecisionAlgo);
+        if ( m_serverVersion >= MIN_SERVER_VER_DECISION_MAKER ) 
+        {
+            ENCODE_FIELD(           order.mifid2DecisionMaker               );
+            ENCODE_FIELD(           order.mifid2DecisionAlgo                );
         }
 
-        if (m_serverVersion >= MIN_SERVER_VER_MIFID_EXECUTION) {
-            ENCODE_FIELD(order.mifid2ExecutionTrader);
-            ENCODE_FIELD(order.mifid2ExecutionAlgo);
+        if ( m_serverVersion >= MIN_SERVER_VER_MIFID_EXECUTION ) 
+        {
+            ENCODE_FIELD(           order.mifid2ExecutionTrader             );
+            ENCODE_FIELD(           order.mifid2ExecutionAlgo               );
         }
 
-        if (m_serverVersion >= MIN_SERVER_VER_AUTO_PRICE_FOR_HEDGE) {
-            ENCODE_FIELD(order.dontUseAutoPriceForHedge);
+        if ( m_serverVersion >= MIN_SERVER_VER_AUTO_PRICE_FOR_HEDGE ) 
+        {
+            ENCODE_FIELD(           order.dontUseAutoPriceForHedge          );
         }
 
-        if (m_serverVersion >= MIN_SERVER_VER_ORDER_CONTAINER) {
-            ENCODE_FIELD(order.isOmsContainer);
+        if ( m_serverVersion >= MIN_SERVER_VER_ORDER_CONTAINER ) 
+        {
+            ENCODE_FIELD(           order.isOmsContainer                    );
         }
 
-        if (m_serverVersion >= MIN_SERVER_VER_D_PEG_ORDERS) {
-            ENCODE_FIELD(order.discretionaryUpToLimitPrice);
+        if ( m_serverVersion >= MIN_SERVER_VER_D_PEG_ORDERS ) 
+        {
+            ENCODE_FIELD(           order.discretionaryUpToLimitPrice       );
         }
 
-        if (m_serverVersion >= MIN_SERVER_VER_PRICE_MGMT_ALGO) {
-            ENCODE_FIELD_MAX(order.usePriceMgmtAlgo);
+        if ( m_serverVersion >= MIN_SERVER_VER_PRICE_MGMT_ALGO ) 
+        {
+            ENCODE_FIELD_MAX(           order.usePriceMgmtAlgo              );
         }
+
     }
     catch ( EClientException& ex ) 
     {
@@ -2323,7 +2750,13 @@ void EClient::placeOrder(               OrderId             id,
     
     }
 
-    closeAndSend( msg.str() );
+    //**************************
+    //**************************
+
+    closeAndSend(  msg.str()  );
+
+    //**************************
+    //**************************
 
 }
 
@@ -2380,6 +2813,7 @@ void EClient::reqAccountUpdates(bool subscribe, const std::string& acctCode)
     }
 
     closeAndSend( msg.str());
+
 }
 
 //*********************************************************************************************
@@ -2387,21 +2821,36 @@ void EClient::reqAccountUpdates(bool subscribe, const std::string& acctCode)
 void EClient::reqOpenOrders()
 {
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+ 
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+ 
         return;
+ 
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+
+    prepareBuffer(  msg  );
 
     const int VERSION = 1;
 
     // send req open orders msg
-    ENCODE_FIELD( REQ_OPEN_ORDERS);
-    ENCODE_FIELD( VERSION);
+    ENCODE_FIELD(           REQ_OPEN_ORDERS         );
+    ENCODE_FIELD(           VERSION                 );
 
-    closeAndSend( msg.str());
+
+    //**************************
+    //**************************
+
+    closeAndSend(  msg.str()  );
+
+    //**************************
+    //**************************
+
 }
 
 //**********************************************************************************************
@@ -2451,45 +2900,72 @@ void EClient::reqAllOpenOrders()
 
 //*********************************************************************************************
 
-void EClient::reqExecutions(int reqId, const ExecutionFilter& filter)
+void EClient::reqExecutions(              int                   reqId, 
+                                    const ExecutionFilter&      filter          )
 {
+
     //NOTE: Time format must be 'yyyymmdd-hh:mm:ss' E.g. '20030702-14:55'
 
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()                 );
+    
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
 
-    try {
+    prepareBuffer(  msg  );
+
+    try 
+    {
+    
         const int VERSION = 3;
 
         // send req open orders msg
-        ENCODE_FIELD( REQ_EXECUTIONS);
-        ENCODE_FIELD( VERSION);
+        ENCODE_FIELD(           REQ_EXECUTIONS              );
+        ENCODE_FIELD(           VERSION                     );
 
-        if( m_serverVersion >= MIN_SERVER_VER_EXECUTION_DATA_CHAIN) {
-            ENCODE_FIELD( reqId);
+        if( m_serverVersion >= MIN_SERVER_VER_EXECUTION_DATA_CHAIN) 
+        {
+            ENCODE_FIELD(           reqId                   );
         }
 
         // Send the execution rpt filter data (srv v9 and above)
-        ENCODE_FIELD( filter.m_clientId);
-        ENCODE_FIELD( filter.m_acctCode);
-        ENCODE_FIELD( filter.m_time);
-        ENCODE_FIELD( filter.m_symbol);
-        ENCODE_FIELD( filter.m_secType);
-        ENCODE_FIELD( filter.m_exchange);
-        ENCODE_FIELD( filter.m_side);
+        ENCODE_FIELD(           filter.m_clientId           );
+        ENCODE_FIELD(           filter.m_acctCode           );
+        ENCODE_FIELD(           filter.m_time               );
+        ENCODE_FIELD(           filter.m_symbol             );
+        ENCODE_FIELD(           filter.m_secType            );
+        ENCODE_FIELD(           filter.m_exchange           );
+        ENCODE_FIELD(           filter.m_side               );
+
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(reqId, ex.error().code(), ex.error().msg() + ex.text());
+    catch (  EClientException&  ex  ) 
+    {
+    
+        m_pEWrapper->error(             reqId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+    
         return;
+    
     }
 
-    closeAndSend( msg.str());
+    //**************************
+    //**************************
+
+    closeAndSend(  msg.str()  );
+
+    //**************************
+    //**************************
+
+
 }
 
 //********************************************************************************************
@@ -2767,30 +3243,45 @@ void EClient::reqGlobalCancel()
 
 //*********************************************************************************************
 
-void EClient::reqMarketDataType( int marketDataType)
+void EClient::reqMarketDataType(  int  marketDataType  )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+    
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+    
         return;
+
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_REQ_MARKET_DATA_TYPE) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support market data type requests.");
+    if( m_serverVersion < MIN_SERVER_VER_REQ_MARKET_DATA_TYPE ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() +
+                                        "  It does not support market data type requests."  );
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+
+    prepareBuffer(  msg  );
 
     const int VERSION = 1;
 
-    ENCODE_FIELD( REQ_MARKET_DATA_TYPE);
-    ENCODE_FIELD( VERSION);
-    ENCODE_FIELD( marketDataType);
+    ENCODE_FIELD(           REQ_MARKET_DATA_TYPE            );
+    ENCODE_FIELD(           VERSION                         );
+    ENCODE_FIELD(           marketDataType                  );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //*********************************************************************************************
@@ -3961,7 +4452,8 @@ void EClient::reqTickByTickData(int reqId, const Contract &contract, const std::
         return;
     }
 
-    closeAndSend(msg.str());    
+    closeAndSend(msg.str());
+    
 }
 
 //********************************************************************************************

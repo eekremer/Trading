@@ -278,9 +278,15 @@ void TestCppClient::processMessages()
 		case ST_ACCOUNTOPERATIONS_ACK:
 			break;
 
+		//*************************************************
+		//*************************************************
+
 		case ST_ORDEROPERATIONS:
 			orderOperations();
 			break;
+
+		//*************************************************
+		//*************************************************			
 
 		case ST_ORDEROPERATIONS_ACK:
 			break;
@@ -2353,7 +2359,7 @@ void TestCppClient::whatIfSamples()
 //**********************************************************************************************************************
 
 //! [nextvalidid]
-void TestCppClient::nextValidId( OrderId orderId)
+void TestCppClient::nextValidId(  OrderId   orderId  )
 {
 
 	printf(									"Next Valid Id: %ld\n", 
@@ -3029,20 +3035,20 @@ void TestCppClient::receiveFA(				faDataType 				pFaDataType,
 //**********************************************************************************************************************
 
 //! [historicaldata]
-void TestCppClient::historicalData(			TickerId 		reqId, 
-											const Bar& 		bar				) 
+void TestCppClient::historicalData(			  	  TickerId 		reqId, 
+											const Bar& 			bar				) 
 {
 
-	printf( 					"HistoricalData. ReqId: %ld - Date: %s, Open: %g, High: %g, Low: %g, Close: %g, Volume: %lld, Count: %d, WAP: %g\n", 
-								reqId, 
-								bar.time.c_str(), 
-								bar.open, 
-								bar.high, 
-								bar.low, 
-								bar.close, 
-								bar.volume, 
-								bar.count, 
-								bar.wap										);
+	printf( 			"HistoricalData. ReqId: %ld - Date: %s, Open: %g, High: %g, Low: %g, Close: %g, Volume: %lld, Count: %d, WAP: %g\n", 
+						reqId, 
+						bar.time.c_str(), 
+						bar.open, 
+						bar.high, 
+						bar.low, 
+						bar.close, 
+						bar.volume, 
+						bar.count, 
+						bar.wap										);
 
 }
 //! [historicaldata]

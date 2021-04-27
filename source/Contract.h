@@ -126,10 +126,10 @@ struct Contract
 	typedef std::vector<ComboLegSPtr> 		ComboLegList;
 	typedef std::shared_ptr<ComboLegList> 	ComboLegListSPtr;
 
-	ComboLegListSPtr comboLegs;
+	ComboLegListSPtr 		 comboLegs;
 
 	// delta neutral contract
-	DeltaNeutralContract* deltaNeutralContract;
+	DeltaNeutralContract	*deltaNeutralContract;
 
 public:
 
