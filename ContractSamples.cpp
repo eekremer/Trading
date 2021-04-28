@@ -209,7 +209,7 @@ Contract ContractSamples::OptionAtIse()
 
 //******************************************************************************************
 
-Contract ContractSamples::USStock()
+Contract ContractSamples:: USStock()
 {
 	//! [stkcontract]
 	Contract contract;
@@ -248,10 +248,10 @@ Contract ContractSamples::USStockAtSmart()
 
 	Contract contract;
 
-	contract.symbol 	= "IBM";
-	contract.secType 	= "STK";
-	contract.currency 	= "USD";
-	contract.exchange 	= "SMART";
+	contract.symbol 	=   "IBM";
+	contract.secType 	=   "STK";
+	contract.currency 	=   "USD";
+	contract.exchange 	=   "SMART";
 
 	return contract;
 }
@@ -710,8 +710,8 @@ Contract ContractSamples::StockComboContract()
 
 	contract.comboLegs.reset(	new Contract::ComboLegList()	);
 
-	contract.comboLegs->push_back(leg1);
-	contract.comboLegs->push_back(leg2);
+	contract.comboLegs->push_back(  leg1  );
+	contract.comboLegs->push_back(  leg2  );
 
 	//! [bagstkcontract]
 	return contract;

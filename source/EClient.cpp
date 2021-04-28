@@ -344,7 +344,7 @@ int EClient::bufferedSend(  const std::string&  msg  )
 
     EMessage emsg(  std::vector<char>(      msg.begin(),   msg.end()      )   );
 
-    return m_transport->send(   &emsg   );
+    return  m_transport->send(   &emsg   );
 
 }
 
@@ -546,8 +546,16 @@ void EClient::reqMktData(               TickerId                tickerId,
     
     }
 
+    //*************************
+    //*************************
+
     closeAndSend( msg.str() );
     
+    //*************************
+    //*************************
+
+
+
 }
 
 //********************************************************************************************
@@ -1622,7 +1630,13 @@ void EClient::reqContractDetails(               int                 reqId,
     
     }
 
-    closeAndSend(   msg.str()   );
+    //***************************
+    //***************************
+
+    closeAndSend(  msg.str()  );
+
+    //***************************
+    //***************************
 
 }
 

@@ -176,6 +176,7 @@ void TestCppClient::processMessages()
 			break;
 		
 		//*************************************************
+		// require data...
 		//*************************************************
 
 		case ST_TICKDATAOPERATION:
@@ -634,9 +635,10 @@ void TestCppClient::tickDataOperation()
 
 	//! [reqmktdata_contractnews]
 	// Without the API news subscription this will generate an "invalid tick type" error
+
 	m_pClient->reqMktData(				1005, 	
 										ContractSamples::USStock(), 	
-										"mdoff,292:BZ", 	
+										"mdoff,292:BZ", // Benzinga Pro	news services)
 										false, 	
 										false, 
 										TagValueListSPtr()										);
@@ -650,7 +652,7 @@ void TestCppClient::tickDataOperation()
 	
 	m_pClient->reqMktData(				1007, 	
 										ContractSamples::USStock(), 	
-										"mdoff,292:FLY", 	
+										"mdoff,292:FLY",  // Fly on the Wall  	
 										false, 	
 										false, 
 										TagValueListSPtr()										);

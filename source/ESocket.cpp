@@ -51,8 +51,10 @@ int ESocket::bufferedSend(			const char* 	buf,
 									size_t 			sz				)
 {
 
+
 	if( sz <= 0 )
 		return 0;
+
 
 	if( !m_outBuffer.empty() ) 
 	{

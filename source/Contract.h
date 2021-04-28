@@ -49,7 +49,7 @@ struct ComboLeg
 	std::string		designatedLocation;
 	int				exemptCode;
 
-	bool operator==( const ComboLeg& other ) const
+	bool operator==( const ComboLeg&  other ) const
 	{
 
 		return (	conId 				 == 	other.conId 				&&
