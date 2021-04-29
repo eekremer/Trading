@@ -2,7 +2,7 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 
-#include "StdAfx.h"
+#include "../StdAfx.h"
 #include "EWrapper.h"
 #include "Order.h"
 #include "Contract.h"
