@@ -5,29 +5,31 @@
 
 #include "TestCppClient.h"
 
-#include "EClientSocket.h"
-#include "EPosixClientSocketPlatform.h"
+#include "source/EClientSocket.h"
+#include "source/EPosixClientSocketPlatform.h"
 
-#include "Contract.h"
-#include "Order.h"
-#include "OrderState.h"
-#include "Execution.h"
-#include "CommissionReport.h"
+#include "source/Contract.h"
+#include "source/Order.h"
+#include "source/OrderState.h"
+#include "source/Execution.h"
+#include "source/CommonDefs.h"
 #include "ContractSamples.h"
 #include "OrderSamples.h"
-#include "ScannerSubscription.h"
+#include "source/ScannerSubscription.h"
 #include "ScannerSubscriptionSamples.h"
-#include "executioncondition.h"
-#include "PriceCondition.h"
-#include "MarginCondition.h"
-#include "PercentChangeCondition.h"
-#include "TimeCondition.h"
-#include "VolumeCondition.h"
+#include "source/executioncondition.h"
+#include "source/PriceCondition.h"
+#include "source/MarginCondition.h"
+#include "source/PercentChangeCondition.h"
+#include "source/TimeCondition.h"
+#include "source/VolumeCondition.h"
 #include "AvailableAlgoParams.h"
 #include "FAMethodSamples.h"
-#include "CommonDefs.h"
+#include "source/CommonDefs.h"
 #include "AccountSummaryTags.h"
 #include "Utils.h"
+#include "source/CommissionReport.h"
+
 
 #include <stdio.h>
 #include <chrono>
@@ -3200,10 +3202,10 @@ void TestCppClient::marketDataType(				TickerId 	reqId,
 //**********************************************************************************************************************
 
 //! [commissionreport]
-void TestCppClient::commissionReport( const CommissionReport&  commissionReport  ) 
+void TestCppClient::commissionReport(  const CommissionReport&  commissionReport  ) 
 {
 
-	printf( 					"CommissionReport. %s - %g %s RPNL %g\n", 
+	printf( 					"CommissionReport. %s - %g %s RPNL %g \n", 
 								commissionReport.execId.c_str(), 
 								commissionReport.commission, 
 								commissionReport.currency.c_str(), 

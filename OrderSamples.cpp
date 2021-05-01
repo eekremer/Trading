@@ -3,14 +3,14 @@
 
 #include "StdAfx.h"
 
-#include "Order.h"
+#include "source/Order.h"
 #include "OrderSamples.h"
-#include "PriceCondition.h"
-#include "executioncondition.h"
-#include "MarginCondition.h"
-#include "PercentChangeCondition.h"
-#include "TimeCondition.h"
-#include "VolumeCondition.h"
+#include "source/PriceCondition.h"
+#include "source/executioncondition.h"
+#include "source/MarginCondition.h"
+#include "source/PercentChangeCondition.h"
+#include "source/TimeCondition.h"
+#include "source/VolumeCondition.h"
 
 
 
