@@ -13,10 +13,21 @@ EXT = .cpp
 SRCDIR = source
 OBJDIR = obj
 
+VAR1 = HOLA
+VAR2 = $(VAR1) CHAO
+
 ############## Do not change anything from here downwards! #############
+
+# variable
 SRC = $(wildcard $(SRCDIR)/*$(EXT))
+SRC2 = $(wildcard *.cpp)
+
+# Substitution reference
 OBJ = $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)/%.o)
+
+
 DEP = $(OBJ:$(OBJDIR)/%.o=%.d)
+
 # UNIX-based OS variables & settings
 RM = rm
 DELOBJ = $(OBJ)
@@ -26,7 +37,6 @@ DELOBJ = $(OBJ)
 ########################################################################
 
 all: $(APPNAME)
-
 
 # Builds the app
 # $@ name of the target of the rule
@@ -43,20 +53,24 @@ $(APPNAME): $(OBJ)
 # Includes all .h files
 #-include $(DEP)
 
-
-
 # Building rule for .o files and its .c/.cpp in combination with all .h
-# $@ name of the target of the rule
-# $< name of the first dependency
+# $@ target
+# $< dependency
 $(OBJDIR)/%.o: $(SRCDIR)/%$(EXT)
+	$(info $$SRC is [${SRC}])
+	$(info $$SRC2 is [${SRC2}])
+	$(info $$VAR2 is [${VAR2}])		
+	$(info $$OBJ is [${OBJ}])	
 	@echo "compiling files in obj directory..."	
 	$(CC) $(CXXFLAGS) -o $@ -c $<
 
+
 ################### Cleaning rules for Unix-based OS ###################
+
 # Cleans complete project
-.PHONY: clean
-clean:
-	$(RM) $(DELOBJ) $(DEP) $(APPNAME)
+#.PHONY: clean
+#clean:
+#	$(RM) $(DELOBJ) $(DEP) $(APPNAME)
 
 # Cleans .o files
 .PHONY: clean_o
@@ -65,6 +79,6 @@ clean_o:
 	$(RM) $(DELOBJ)
 
 # Cleans only all files with the extension .d
-.PHONY: cleandep
-cleandep:
-	$(RM) $(DEP)
+#.PHONY: cleandep
+#cleandep:
+#	$(RM) $(DEP)
