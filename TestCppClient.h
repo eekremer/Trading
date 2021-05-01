@@ -5,9 +5,9 @@
 #ifndef TWS_API_SAMPLES_TESTCPPCLIENT_TESTCPPCLIENT_H
 #define TWS_API_SAMPLES_TESTCPPCLIENT_TESTCPPCLIENT_H
 
-#include "EWrapper.h"
-#include "EReaderOSSignal.h"
-#include "EReader.h"
+#include "source/EWrapper.h"
+#include "source/EReaderOSSignal.h"
+#include "source/EReader.h"
 
 #include <memory>
 #include <vector>
@@ -128,12 +128,12 @@ public:
 
 public:
 
-	bool 	connect(				const char* host, 
+	bool 	connect				(   const char* host, 
 											int port, 
 											int clientId = 0			);
 
 	void 	disconnect	() const;
-	bool 	isConnected() const;
+	bool 	isConnected () const;
 
 private:
     void 	pnlOperation					();
@@ -182,15 +182,15 @@ private:
 public:
 
 	// events
-	#include "EWrapper_prototypes.h"
+	#include "source/EWrapper_prototypes.h"
 
 
 private:
 
-	void printContractMsg				(	const Contract				&contract				);
-	void printContractDetailsMsg		(	const ContractDetails		&contractDetails		);
-	void printContractDetailsSecIdList	(	const TagValueListSPtr 		&secIdList				);
-	void printBondContractDetailsMsg	(	const ContractDetails		&contractDetails		);
+	void 	printContractMsg				(	const Contract				&contract				);
+	void 	printContractDetailsMsg			(	const ContractDetails		&contractDetails		);
+	void 	printContractDetailsSecIdList	(	const TagValueListSPtr 		&secIdList				);
+	void 	printBondContractDetailsMsg		(	const ContractDetails		&contractDetails		);
 
 private:
 

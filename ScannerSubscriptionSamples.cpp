@@ -3,7 +3,7 @@
 
 #include "StdAfx.h"
 
-#include "ScannerSubscription.h"
+#include "source/ScannerSubscription.h"
 #include "ScannerSubscriptionSamples.h"
 
 

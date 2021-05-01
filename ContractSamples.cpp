@@ -5,7 +5,7 @@
 
 #include "ContractSamples.h"
 
-#include "Contract.h"
+#include "source/Contract.h"
 
 
 	/*

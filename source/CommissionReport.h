@@ -24,12 +24,12 @@ struct CommissionReport
 	}
 
 	// commission report fields
-	std::string	 execId;
-	double		 commission;
-	std::string	 currency;
-	double		 realizedPNL;
-	double		 yield;
-	int			 yieldRedemptionDate; // YYYYMMDD format
+	std::string	 	execId;
+	double		 	commission;
+	std::string	 	currency;
+	double		 	realizedPNL;
+	double		 	yield;
+	int			 	yieldRedemptionDate; // YYYYMMDD format
 	
 };
 
