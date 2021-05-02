@@ -4,11 +4,11 @@
 
 # Compiler settings - Can be customized.
 CC = g++
-CXXFLAGS = -std=c++11 -Wall
+CXXFLAGS = -g -std=c++11 -Wall 
 LDFLAGS = -pthread
 
 # Makefile settings - Can be customized.
-APPNAME = trading_app
+APPNAME = trading
 EXT = .cpp
 SRCDIR = source
 OBJDIR = obj
@@ -80,8 +80,8 @@ $(OBJDIR)/%.o: $(SRCDIR)/%$(EXT)
 #	$(RM) $(DELOBJ) $(DEP) $(APPNAME)
 
 # Cleans .o files
-.PHONY: clean_o
-clean_o:
+.PHONY: clean
+clean:
 	@echo "removing .o files..."	
 	$(RM) $(DELOBJ)
 	$(RM) $(OBJ2)
