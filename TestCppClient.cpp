@@ -76,7 +76,7 @@ TestCppClient::~TestCppClient()
 
 //**********************************************************************************************************************
 
-bool TestCppClient::connect(			const char 		*host, 
+bool TestCppClient::connect(			const char 	   *host, 
 										int 			port, 
 										int 			clientId			)
 {

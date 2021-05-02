@@ -146,48 +146,75 @@ void EClient::EncodeContract(               std::ostream&       os,
 
 //********************************************************************************************
 
-void EClient::EncodeTagValueList(std::ostream& os, const TagValueListSPtr &tagValueList) 
+void EClient::EncodeTagValueList(               std::ostream&           os, 
+                                          const TagValueListSPtr&       tagValueList        ) 
 {
-    std::string tagValueListStr("");
+
+    std::string tagValueListStr( "" );
+    
     const int tagValueListCount = tagValueList.get() ? tagValueList->size() : 0;
 
-    if (tagValueListCount > 0) {
-        for (int i = 0; i < tagValueListCount; ++i) {
-            const TagValue* tagValue = ((*tagValueList)[i]).get();
+    if ( tagValueListCount > 0 ) 
+    {
+
+        for ( int i = 0; i < tagValueListCount; ++i ) 
+        {
+
+            const TagValue* tagValue = ( (*tagValueList)[ i ] ).get();
 
             tagValueListStr += tagValue->tag;
             tagValueListStr += "=";
             tagValueListStr += tagValue->value;
             tagValueListStr += ";";
+        
         }
+
     }
 
-    EncodeField(os, tagValueListStr);
+    EncodeField(            os, 
+                            tagValueListStr             );
+
 }
 
 //********************************************************************************************
 
 // "max" encoders
-void EClient::EncodeFieldMax(std::ostream& os, int intValue)
+void EClient::EncodeFieldMax(           std::ostream&       os, 
+                                        int                 intValue            )
 {
-    if( intValue == INT_MAX) {
-        EncodeField(os, "");
+    if( intValue == INT_MAX ) 
+    {
+
+        EncodeField(            os, 
+                                ""              );
+
         return;
+
     }
-    EncodeField(os, intValue);
+    
+    EncodeField(            os, 
+                            intValue            );
+
 }
 
 //********************************************************************************************
 
-void EClient::EncodeFieldMax(std::ostream& os, double doubleValue)
+void EClient::EncodeFieldMax(           std::ostream&       os, 
+                                        double              doubleValue         )
 {
-    if( doubleValue == DBL_MAX) 
+
+    if( doubleValue == DBL_MAX ) 
     {
-        EncodeField(os, "");
+
+        EncodeField(            os, 
+                                ""              );
+        
         return;
+    
     }
 
-    EncodeField(os, doubleValue);
+    EncodeField(            os, 
+                            doubleValue             );
 
 }
 
@@ -206,7 +233,9 @@ EClient::EClient(       EWrapper    *ptr,
     , m_serverVersion   (       0                       )
     , m_useV100Plus     (       true                    )
 {
+
     //nothing
+
 }
 
 //********************************************************************************************
@@ -660,7 +689,8 @@ void EClient::reqMktDepth(          TickerId                tickerId,
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+
+    prepareBuffer( msg );
 
     try 
     {
@@ -736,19 +766,31 @@ void EClient::reqMktDepth(          TickerId                tickerId,
 
 //********************************************************************************************
 
-void EClient::cancelMktDepth( TickerId tickerId, bool isSmartDepth)
+void EClient::cancelMktDepth(           TickerId    tickerId, 
+                                        bool        isSmartDepth            )
 {
     
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( tickerId, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             tickerId, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
-    if (m_serverVersion < MIN_SERVER_VER_SMART_DEPTH && isSmartDepth) {
-        m_pEWrapper->error( tickerId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support SMART depth cancel.");
+    if ( m_serverVersion < MIN_SERVER_VER_SMART_DEPTH && isSmartDepth ) 
+    {
+
+        m_pEWrapper->error(             tickerId, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support SMART depth cancel.");
+        
         return;
+    
     }
 
     // Not needed anymore validation
@@ -759,20 +801,23 @@ void EClient::cancelMktDepth( TickerId tickerId, bool isSmartDepth)
     //}
 
     std::stringstream msg;
-    prepareBuffer( msg);
+
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
     // send cancel mkt data msg
-    ENCODE_FIELD( CANCEL_MKT_DEPTH);
-    ENCODE_FIELD( VERSION);
-    ENCODE_FIELD( tickerId);
+    ENCODE_FIELD(           CANCEL_MKT_DEPTH            );
+    ENCODE_FIELD(           VERSION                     );
+    ENCODE_FIELD(           tickerId                    );
 
-    if( m_serverVersion >= MIN_SERVER_VER_SMART_DEPTH) {
-        ENCODE_FIELD( isSmartDepth);
+    if( m_serverVersion >= MIN_SERVER_VER_SMART_DEPTH ) 
+    {
+        ENCODE_FIELD(       isSmartDepth        );
     }
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
@@ -883,6 +928,7 @@ void EClient::reqHistoricalData(                TickerId                tickerId
             
             ENCODE_FIELD(           comboLegsCount          );
 
+
             if ( comboLegsCount > 0 ) 
             {
 
@@ -936,9 +982,15 @@ void EClient::reqHistoricalData(                TickerId                tickerId
 void EClient::cancelHistoricalData(TickerId tickerId)
 {
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( tickerId, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+    
+        m_pEWrapper->error(             tickerId, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
     // Not needed anymore validation
@@ -949,27 +1001,39 @@ void EClient::cancelHistoricalData(TickerId tickerId)
     //}
 
     std::stringstream msg;
-    prepareBuffer( msg);
+
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
-    ENCODE_FIELD( CANCEL_HISTORICAL_DATA);
-    ENCODE_FIELD( VERSION);
-    ENCODE_FIELD( tickerId);
+    ENCODE_FIELD(           CANCEL_HISTORICAL_DATA          );
+    ENCODE_FIELD(           VERSION                         );
+    ENCODE_FIELD(           tickerId                        );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
-void EClient::reqRealTimeBars(TickerId tickerId, const Contract& contract,
-                              int barSize, const std::string& whatToShow, bool useRTH,
-                              const TagValueListSPtr& realTimeBarsOptions)
+void EClient::reqRealTimeBars(              TickerId            tickerId, 
+                                      const Contract&           contract,
+                                            int                 barSize, 
+                                      const std::string&        whatToShow, 
+                                            bool                useRTH,
+                                      const TagValueListSPtr&   realTimeBarsOptions         )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( tickerId, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             tickerId, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
     // Not needed anymore validation
@@ -979,66 +1043,100 @@ void EClient::reqRealTimeBars(TickerId tickerId, const Contract& contract,
     //	return;
     //}
 
-    if (m_serverVersion < MIN_SERVER_VER_TRADING_CLASS) {
-        if( !contract.tradingClass.empty() || (contract.conId > 0)) {
-            m_pEWrapper->error( tickerId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support conId and tradingClass parameters in reqRealTimeBars.");
+    if ( m_serverVersion < MIN_SERVER_VER_TRADING_CLASS ) 
+    {
+
+        if( !contract.tradingClass.empty() || ( contract.conId > 0 ) ) 
+        {
+        
+            m_pEWrapper->error(             tickerId, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + "  It does not support conId and tradingClass parameters in reqRealTimeBars.");
+            
             return;
+        
         }
+
     }
 
+    
     std::stringstream msg;
+    
     prepareBuffer( msg);
 
-    try {
+    
+    try 
+    {
+
         const int VERSION = 3;
 
-        ENCODE_FIELD( REQ_REAL_TIME_BARS);
-        ENCODE_FIELD( VERSION);
-        ENCODE_FIELD( tickerId);
+        ENCODE_FIELD(       REQ_REAL_TIME_BARS          );
+        ENCODE_FIELD(       VERSION                     );
+        ENCODE_FIELD(       tickerId                    );
 
         // send contract fields
-        if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
-            ENCODE_FIELD( contract.conId);
+        if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS ) 
+        {
+            ENCODE_FIELD(           contract.conId              );
         }
-        ENCODE_FIELD( contract.symbol);
-        ENCODE_FIELD( contract.secType);
-        ENCODE_FIELD( contract.lastTradeDateOrContractMonth);
-        ENCODE_FIELD( contract.strike);
-        ENCODE_FIELD( contract.right);
-        ENCODE_FIELD( contract.multiplier);
-        ENCODE_FIELD( contract.exchange);
-        ENCODE_FIELD( contract.primaryExchange);
-        ENCODE_FIELD( contract.currency);
-        ENCODE_FIELD( contract.localSymbol);
-        if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
-            ENCODE_FIELD( contract.tradingClass);
+        
+        ENCODE_FIELD(           contract.symbol                         );
+        ENCODE_FIELD(           contract.secType                        );
+        ENCODE_FIELD(           contract.lastTradeDateOrContractMonth   );
+        ENCODE_FIELD(           contract.strike                         );
+        ENCODE_FIELD(           contract.right                          );
+        ENCODE_FIELD(           contract.multiplier                     );
+        ENCODE_FIELD(           contract.exchange                       );
+        ENCODE_FIELD(           contract.primaryExchange                );
+        ENCODE_FIELD(           contract.currency                       );
+        ENCODE_FIELD(           contract.localSymbol                    );
+
+        if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS ) 
+        {
+            ENCODE_FIELD(           contract.tradingClass           );
         }
-        ENCODE_FIELD( barSize);
-        ENCODE_FIELD( whatToShow);
-        ENCODE_FIELD( useRTH);
+
+        ENCODE_FIELD(           barSize                 );
+        ENCODE_FIELD(           whatToShow              );
+        ENCODE_FIELD(           useRTH                  );
 
         // send realTimeBarsOptions parameter
-        if( m_serverVersion >= MIN_SERVER_VER_LINKING) {
-            ENCODE_TAGVALUELIST(realTimeBarsOptions);
+        if( m_serverVersion >= MIN_SERVER_VER_LINKING ) 
+        {
+            ENCODE_TAGVALUELIST(        realTimeBarsOptions         );
         }
+
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(tickerId, ex.error().code(), ex.error().msg() + ex.text());
+    catch ( EClientException& ex ) 
+    {
+
+        m_pEWrapper->error(             tickerId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
         return;
+    
     }
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
-void EClient::cancelRealTimeBars(TickerId tickerId)
+void EClient::cancelRealTimeBars(  TickerId  tickerId  )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( tickerId, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+    
+        m_pEWrapper->error(             tickerId, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+    
         return;
+    
     }
 
     // Not needed anymore validation
@@ -1049,25 +1147,34 @@ void EClient::cancelRealTimeBars(TickerId tickerId)
     //}
 
     std::stringstream msg;
-    prepareBuffer( msg);
+    
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
-    ENCODE_FIELD( CANCEL_REAL_TIME_BARS);
-    ENCODE_FIELD( VERSION);
-    ENCODE_FIELD( tickerId);
+    ENCODE_FIELD(           CANCEL_REAL_TIME_BARS           );
+    ENCODE_FIELD(           VERSION                         );
+    ENCODE_FIELD(           tickerId                        );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
 void EClient::reqScannerParameters()
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()                 );
+        
         return;
+    
     }
 
     // Not needed anymore validation
@@ -1078,25 +1185,36 @@ void EClient::reqScannerParameters()
     //}
 
     std::stringstream msg;
-    prepareBuffer( msg);
+
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
-    ENCODE_FIELD( REQ_SCANNER_PARAMETERS);
-    ENCODE_FIELD( VERSION);
+    ENCODE_FIELD(           REQ_SCANNER_PARAMETERS              );
+    ENCODE_FIELD(           VERSION                             );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
-void EClient::reqScannerSubscription(int tickerId,
-                                     const ScannerSubscription& subscription, const TagValueListSPtr& scannerSubscriptionOptions, const TagValueListSPtr& scannerSubscriptionFilterOptions)
+void EClient::reqScannerSubscription(           int                     tickerId,
+                                          const ScannerSubscription&    subscription, 
+                                          const TagValueListSPtr&       scannerSubscriptionOptions, 
+                                          const TagValueListSPtr&       scannerSubscriptionFilterOptions )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( tickerId, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+    
+        m_pEWrapper->error(             tickerId, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+    
         return;
+    
     }
 
     // Not needed anymore validation
@@ -1107,65 +1225,92 @@ void EClient::reqScannerSubscription(int tickerId,
     //}
 
     std::stringstream msg;
-    prepareBuffer( msg);
 
-    try {
+    prepareBuffer( msg );
+
+    try 
+    {
+
         const int VERSION = 4;
 
-        ENCODE_FIELD( REQ_SCANNER_SUBSCRIPTION);
+        ENCODE_FIELD(           REQ_SCANNER_SUBSCRIPTION            );
 
-        if (m_serverVersion < MIN_SERVER_VER_SCANNER_GENERIC_OPTS) {
-            ENCODE_FIELD(VERSION);
+        if ( m_serverVersion < MIN_SERVER_VER_SCANNER_GENERIC_OPTS ) 
+        {
+            ENCODE_FIELD(           VERSION         );
         }
 
-        ENCODE_FIELD( tickerId);
-        ENCODE_FIELD_MAX( subscription.numberOfRows);
-        ENCODE_FIELD( subscription.instrument);
-        ENCODE_FIELD( subscription.locationCode);
-        ENCODE_FIELD( subscription.scanCode);
-        ENCODE_FIELD_MAX( subscription.abovePrice);
-        ENCODE_FIELD_MAX( subscription.belowPrice);
-        ENCODE_FIELD_MAX( subscription.aboveVolume);
-        ENCODE_FIELD_MAX( subscription.marketCapAbove);
-        ENCODE_FIELD_MAX( subscription.marketCapBelow);
-        ENCODE_FIELD( subscription.moodyRatingAbove);
-        ENCODE_FIELD( subscription.moodyRatingBelow);
-        ENCODE_FIELD( subscription.spRatingAbove);
-        ENCODE_FIELD( subscription.spRatingBelow);
-        ENCODE_FIELD( subscription.maturityDateAbove);
-        ENCODE_FIELD( subscription.maturityDateBelow);
-        ENCODE_FIELD_MAX( subscription.couponRateAbove);
-        ENCODE_FIELD_MAX( subscription.couponRateBelow);
-        ENCODE_FIELD_MAX( subscription.excludeConvertible);
-        ENCODE_FIELD_MAX( subscription.averageOptionVolumeAbove); // srv v25 and above
-        ENCODE_FIELD( subscription.scannerSettingPairs); // srv v25 and above
-        ENCODE_FIELD( subscription.stockTypeFilter); // srv v27 and above
+        ENCODE_FIELD(               tickerId                                );
 
-        if (m_serverVersion >= MIN_SERVER_VER_SCANNER_GENERIC_OPTS) {
-            ENCODE_TAGVALUELIST(scannerSubscriptionFilterOptions);
+        ENCODE_FIELD_MAX(           subscription.numberOfRows               );
+
+        ENCODE_FIELD(               subscription.instrument);
+        ENCODE_FIELD(               subscription.locationCode);
+        ENCODE_FIELD(               subscription.scanCode);
+        
+        ENCODE_FIELD_MAX(           subscription.abovePrice);
+        ENCODE_FIELD_MAX(           subscription.belowPrice);
+        ENCODE_FIELD_MAX(           subscription.aboveVolume);
+        ENCODE_FIELD_MAX(           subscription.marketCapAbove);
+        ENCODE_FIELD_MAX(           subscription.marketCapBelow);
+        
+        ENCODE_FIELD(               subscription.moodyRatingAbove);
+        ENCODE_FIELD(               subscription.moodyRatingBelow);
+        ENCODE_FIELD(               subscription.spRatingAbove);
+        ENCODE_FIELD(               subscription.spRatingBelow);
+        ENCODE_FIELD(               subscription.maturityDateAbove);
+        ENCODE_FIELD(               subscription.maturityDateBelow);
+        
+        ENCODE_FIELD_MAX(           subscription.couponRateAbove);
+        ENCODE_FIELD_MAX(           subscription.couponRateBelow);
+        ENCODE_FIELD_MAX(           subscription.excludeConvertible);
+        ENCODE_FIELD_MAX(           subscription.averageOptionVolumeAbove); // srv v25 and above
+        
+        ENCODE_FIELD(               subscription.scannerSettingPairs); // srv v25 and above
+        ENCODE_FIELD(               subscription.stockTypeFilter); // srv v27 and above
+
+        if ( m_serverVersion >= MIN_SERVER_VER_SCANNER_GENERIC_OPTS ) 
+        {
+            ENCODE_TAGVALUELIST(        scannerSubscriptionFilterOptions        );
         }
 
         // send scannerSubscriptionOptions parameter
-        if( m_serverVersion >= MIN_SERVER_VER_LINKING) {
-            ENCODE_TAGVALUELIST(scannerSubscriptionOptions);
+        if( m_serverVersion >= MIN_SERVER_VER_LINKING ) 
+        {
+            ENCODE_TAGVALUELIST(        scannerSubscriptionOptions              );
         }
+
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(tickerId, ex.error().code(), ex.error().msg() + ex.text());
+    catch ( EClientException& ex ) 
+    {
+
+        m_pEWrapper->error(             tickerId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
         return;
+    
     }
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
-void EClient::cancelScannerSubscription(int tickerId)
+void EClient::cancelScannerSubscription(  int  tickerId  )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( tickerId, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+    
+        m_pEWrapper->error(             tickerId, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+    
         return;
+    
     }
 
     // Not needed anymore validation
@@ -1176,301 +1321,445 @@ void EClient::cancelScannerSubscription(int tickerId)
     //}
 
     std::stringstream msg;
-    prepareBuffer( msg);
+
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
-    ENCODE_FIELD( CANCEL_SCANNER_SUBSCRIPTION);
-    ENCODE_FIELD( VERSION);
-    ENCODE_FIELD( tickerId);
+    ENCODE_FIELD(           CANCEL_SCANNER_SUBSCRIPTION             );
+    ENCODE_FIELD(           VERSION                                 );
+    ENCODE_FIELD(           tickerId                                );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
-void EClient::reqFundamentalData(TickerId reqId, const Contract& contract, 
-                                 const std::string& reportType,
-                                 //reserved for future use, must be blank
-                                 const TagValueListSPtr& fundamentalDataOptions)
+void EClient::reqFundamentalData(           TickerId            reqId, 
+                                      const Contract&           contract, 
+                                      const std::string&        reportType, //reserved for future use, must be blank       
+                                      const TagValueListSPtr&   fundamentalDataOptions      )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( reqId, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+    
+        m_pEWrapper->error(             reqId, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+    
         return;
+
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_FUNDAMENTAL_DATA) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support fundamental data requests.");
+    if( m_serverVersion < MIN_SERVER_VER_FUNDAMENTAL_DATA ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support fundamental data requests.");
+        
         return;
+    
     }
 
-    if (m_serverVersion < MIN_SERVER_VER_TRADING_CLASS) {
-        if( contract.conId > 0) {
-            m_pEWrapper->error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support conId parameter in reqFundamentalData.");
+    if ( m_serverVersion < MIN_SERVER_VER_TRADING_CLASS ) 
+    {
+
+        if( contract.conId > 0 ) 
+        {
+
+            m_pEWrapper->error(             reqId, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + "  It does not support conId parameter in reqFundamentalData.");
+        
             return;
+        
         }
+
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
 
-    try {
+    prepareBuffer( msg );
+
+    try 
+    {
+
         const int VERSION = 2;
 
-        ENCODE_FIELD(REQ_FUNDAMENTAL_DATA);
-        ENCODE_FIELD(VERSION);
-        ENCODE_FIELD(reqId);
+        ENCODE_FIELD(           REQ_FUNDAMENTAL_DATA            );
+        ENCODE_FIELD(           VERSION                         );
+        ENCODE_FIELD(           reqId                           );
 
         // send contract fields
-        if (m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
-            ENCODE_FIELD( contract.conId);
+        if ( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS ) 
+        {
+            ENCODE_FIELD(           contract.conId              );
         }
 
-        ENCODE_FIELD(contract.symbol);
-        ENCODE_FIELD(contract.secType);
-        ENCODE_FIELD(contract.exchange);
-        ENCODE_FIELD(contract.primaryExchange);
-        ENCODE_FIELD(contract.currency);
-        ENCODE_FIELD(contract.localSymbol);
+        ENCODE_FIELD(           contract.symbol                     );
+        ENCODE_FIELD(           contract.secType                    );
+        ENCODE_FIELD(           contract.exchange                   );
+        ENCODE_FIELD(           contract.primaryExchange            );
+        ENCODE_FIELD(           contract.currency                   );
+        ENCODE_FIELD(           contract.localSymbol                );
 
-        ENCODE_FIELD(reportType);
+        ENCODE_FIELD( reportType);
 
-        if (m_serverVersion >= MIN_SERVER_VER_LINKING) {
-            ENCODE_TAGVALUELIST(fundamentalDataOptions);
+        if ( m_serverVersion >= MIN_SERVER_VER_LINKING ) 
+        {
+            ENCODE_TAGVALUELIST(        fundamentalDataOptions          );
         }
+
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(reqId, ex.error().code(), ex.error().msg() + ex.text());
+    catch ( EClientException&  ex ) 
+    {
+    
+        m_pEWrapper->error(             reqId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+    
         return;
+    
     }
 
-    closeAndSend(msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
-void EClient::cancelFundamentalData( TickerId reqId)
+void EClient::cancelFundamentalData(  TickerId  reqId  )
 {
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( reqId, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             reqId, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()                 );
+        
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_FUNDAMENTAL_DATA) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support fundamental data requests.");
+    if( m_serverVersion < MIN_SERVER_VER_FUNDAMENTAL_DATA ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support fundamental data requests.");
+        
         return;
+    
     }
+
 
     std::stringstream msg;
-    prepareBuffer( msg);
+
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
-    ENCODE_FIELD( CANCEL_FUNDAMENTAL_DATA);
-    ENCODE_FIELD( VERSION);
-    ENCODE_FIELD( reqId);
+    ENCODE_FIELD(           CANCEL_FUNDAMENTAL_DATA             );
+    ENCODE_FIELD(           VERSION                             );
+    ENCODE_FIELD(           reqId                               );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
-void EClient::calculateImpliedVolatility(TickerId reqId, const Contract& contract, double optionPrice, double underPrice,
+void EClient::calculateImpliedVolatility(           TickerId            reqId, 
+                                              const Contract&           contract, 
+                                                    double              optionPrice, 
+                                                    double              underPrice,
                                         //reserved for future use, must be blank
-                                        const TagValueListSPtr& miscOptions) {
-
-    // not connected?
-    if (!isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
-        return;
-    }
-
-    if (m_serverVersion < MIN_SERVER_VER_REQ_CALC_IMPLIED_VOLAT) {
-        m_pEWrapper->error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support calculate implied volatility requests.");
-        return;
-    }
-
-    if (m_serverVersion < MIN_SERVER_VER_TRADING_CLASS) {
-        if( !contract.tradingClass.empty()) {
-            m_pEWrapper->error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support tradingClass parameter in calculateImpliedVolatility.");
-            return;
-        }
-    }
-
-    std::stringstream msg;
-
-    prepareBuffer(msg);
-
-    try {
-        const int VERSION = 2;
-
-        ENCODE_FIELD(REQ_CALC_IMPLIED_VOLAT);
-        ENCODE_FIELD(VERSION);
-        ENCODE_FIELD(reqId);
-
-        // send contract fields
-        ENCODE_FIELD(contract.conId);
-        ENCODE_FIELD(contract.symbol);
-        ENCODE_FIELD(contract.secType);
-        ENCODE_FIELD(contract.lastTradeDateOrContractMonth);
-        ENCODE_FIELD(contract.strike);
-        ENCODE_FIELD(contract.right);
-        ENCODE_FIELD(contract.multiplier);
-        ENCODE_FIELD(contract.exchange);
-        ENCODE_FIELD(contract.primaryExchange);
-        ENCODE_FIELD(contract.currency);
-        ENCODE_FIELD(contract.localSymbol);
-
-        if (m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
-            ENCODE_FIELD(contract.tradingClass);
-        }
-
-        ENCODE_FIELD(optionPrice);
-        ENCODE_FIELD(underPrice);
-
-        if (m_serverVersion >= MIN_SERVER_VER_LINKING) {
-            ENCODE_TAGVALUELIST(miscOptions);
-        }
-    }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(reqId, ex.error().code(), ex.error().msg() + ex.text());
-        return;
-    }
-
-    closeAndSend( msg.str());
-}
-
-//********************************************************************************************
-
-void EClient::cancelCalculateImpliedVolatility(TickerId reqId) {
-
-    // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
-        return;
-    }
-
-    if (m_serverVersion < MIN_SERVER_VER_CANCEL_CALC_IMPLIED_VOLAT) {
-        m_pEWrapper->error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support calculate implied volatility cancellation.");
-        return;
-    }
-
-    std::stringstream msg;
-    prepareBuffer( msg);
-
-    const int VERSION = 1;
-
-    ENCODE_FIELD( CANCEL_CALC_IMPLIED_VOLAT);
-    ENCODE_FIELD( VERSION);
-    ENCODE_FIELD( reqId);
-
-    closeAndSend( msg.str());
-}
-
-//********************************************************************************************
-
-void EClient::calculateOptionPrice(TickerId reqId, const Contract& contract, double volatility, double underPrice, 
-                                   //reserved for future use, must be blank
-                                   const TagValueListSPtr& miscOptions) {
-
-    // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
-        return;
-    }
-
-    if (m_serverVersion < MIN_SERVER_VER_REQ_CALC_OPTION_PRICE) {
-        m_pEWrapper->error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support calculate option price requests.");
-        return;
-    }
-
-    if (m_serverVersion < MIN_SERVER_VER_TRADING_CLASS) {
-        if( !contract.tradingClass.empty()) {
-            m_pEWrapper->error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support tradingClass parameter in calculateOptionPrice.");
-            return;
-        }
-    }
-
-    std::stringstream msg;
-
-    prepareBuffer(msg);
-
-    try {
-        const int VERSION = 2;
-
-        ENCODE_FIELD( REQ_CALC_OPTION_PRICE);
-        ENCODE_FIELD( VERSION);
-        ENCODE_FIELD( reqId);
-
-        // send contract fields
-        ENCODE_FIELD( contract.conId);
-        ENCODE_FIELD( contract.symbol);
-        ENCODE_FIELD( contract.secType);
-        ENCODE_FIELD( contract.lastTradeDateOrContractMonth);
-        ENCODE_FIELD( contract.strike);
-        ENCODE_FIELD( contract.right);
-        ENCODE_FIELD( contract.multiplier);
-        ENCODE_FIELD( contract.exchange);
-        ENCODE_FIELD( contract.primaryExchange);
-        ENCODE_FIELD( contract.currency);
-        ENCODE_FIELD( contract.localSymbol);
-
-        if (m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
-            ENCODE_FIELD( contract.tradingClass);
-        }
-
-        ENCODE_FIELD( volatility);
-        ENCODE_FIELD( underPrice);
-
-        if (m_serverVersion >= MIN_SERVER_VER_LINKING) {
-            ENCODE_TAGVALUELIST(miscOptions);
-        }
-    }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(reqId, ex.error().code(), ex.error().msg() + ex.text());
-        return;
-    }
-
-    closeAndSend( msg.str());
-}
-
-//********************************************************************************************
-
-void EClient::cancelCalculateOptionPrice(TickerId reqId) 
+                                              const TagValueListSPtr& miscOptions       ) 
 {
 
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if ( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
-    if (m_serverVersion < MIN_SERVER_VER_CANCEL_CALC_OPTION_PRICE) {
-        m_pEWrapper->error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support calculate option price cancellation.");
+    if ( m_serverVersion < MIN_SERVER_VER_REQ_CALC_IMPLIED_VOLAT ) 
+    {
+
+        m_pEWrapper->error(             reqId, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support calculate implied volatility requests.");
+        
         return;
+    
+    }
+
+    if ( m_serverVersion < MIN_SERVER_VER_TRADING_CLASS ) 
+    {
+
+        if( !contract.tradingClass.empty() ) 
+        {
+
+            m_pEWrapper->error(             reqId, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + "  It does not support tradingClass parameter in calculateImpliedVolatility.");
+            
+            return;
+        
+        }
+
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+
+    prepareBuffer( msg );
+
+    try 
+    {
+
+        const int VERSION = 2;
+
+        ENCODE_FIELD(           REQ_CALC_IMPLIED_VOLAT              );
+        ENCODE_FIELD(           VERSION                             );
+        ENCODE_FIELD(           reqId                               );
+
+        // send contract fields
+        ENCODE_FIELD(           contract.conId                              );
+        ENCODE_FIELD(           contract.symbol                             );
+        ENCODE_FIELD(           contract.secType                            );
+        ENCODE_FIELD(           contract.lastTradeDateOrContractMonth       );
+        ENCODE_FIELD(           contract.strike                             );
+        ENCODE_FIELD(           contract.right                              );
+        ENCODE_FIELD(           contract.multiplier                         );
+        ENCODE_FIELD(           contract.exchange                           );
+        ENCODE_FIELD(           contract.primaryExchange                    );
+        ENCODE_FIELD(           contract.currency                           );
+        ENCODE_FIELD(           contract.localSymbol                        );
+
+        if (m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS ) 
+        {
+            ENCODE_FIELD(       contract.tradingClass           );
+        }
+
+        ENCODE_FIELD(           optionPrice                                 );
+        ENCODE_FIELD(           underPrice                                  );
+
+        if ( m_serverVersion >= MIN_SERVER_VER_LINKING ) 
+        {
+            ENCODE_TAGVALUELIST(        miscOptions         );
+        }
+    }
+    catch ( EClientException&  ex ) 
+    {
+
+        m_pEWrapper->error(             reqId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
+        return;
+    
+    }
+
+    closeAndSend( msg.str() );
+
+}
+
+//********************************************************************************************
+
+void EClient::cancelCalculateImpliedVolatility( TickerId  reqId ) 
+{
+
+    // not connected?
+    if( !isConnected() ) 
+    {
+    
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+    
+        return;
+    
+    }
+
+    if ( m_serverVersion < MIN_SERVER_VER_CANCEL_CALC_IMPLIED_VOLAT ) 
+    {
+
+        m_pEWrapper->error(             reqId, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support calculate implied volatility cancellation.");
+        
+        return;
+    
+    }
+
+    std::stringstream msg;
+    
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
-    ENCODE_FIELD( CANCEL_CALC_OPTION_PRICE);
-    ENCODE_FIELD( VERSION);
-    ENCODE_FIELD( reqId);
+    ENCODE_FIELD(           CANCEL_CALC_IMPLIED_VOLAT           );
+    ENCODE_FIELD(           VERSION                             );
+    ENCODE_FIELD(           reqId                               );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
+}
+
+//********************************************************************************************
+
+void EClient::calculateOptionPrice(             TickerId            reqId, 
+                                          const Contract&           contract, 
+                                                double              volatility, 
+                                                double              underPrice, 
+                                                //reserved for future use, must be blank
+                                          const TagValueListSPtr& miscOptions           ) 
+{
+
+    // not connected?
+    if( !isConnected() ) 
+    {
+    
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+    
+        return;
+    
+    }
+
+    if ( m_serverVersion < MIN_SERVER_VER_REQ_CALC_OPTION_PRICE )  
+    {
+
+        m_pEWrapper->error(             reqId, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support calculate option price requests.");
+        
+        return;
+    
+    }
+
+    if ( m_serverVersion < MIN_SERVER_VER_TRADING_CLASS ) 
+    {
+
+        if( !contract.tradingClass.empty() ) 
+        {
+
+            m_pEWrapper->error(             reqId, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + "  It does not support tradingClass parameter in calculateOptionPrice.");
+    
+            return;
+        
+        }
+    
+    }
+
+    std::stringstream msg;
+
+    prepareBuffer( msg );
+
+    try 
+    {
+
+        const int VERSION = 2;
+
+        ENCODE_FIELD(           REQ_CALC_OPTION_PRICE                       );
+        ENCODE_FIELD(           VERSION                                     );
+        ENCODE_FIELD(           reqId                                       );
+
+        // send contract fields
+        ENCODE_FIELD(           contract.conId                              );
+        ENCODE_FIELD(           contract.symbol                             );
+        ENCODE_FIELD(           contract.secType                            );
+        ENCODE_FIELD(           contract.lastTradeDateOrContractMonth       );
+        ENCODE_FIELD(           contract.strike                             );
+        ENCODE_FIELD(           contract.right                              );
+        ENCODE_FIELD(           contract.multiplier                         );
+        ENCODE_FIELD(           contract.exchange                           );
+        ENCODE_FIELD(           contract.primaryExchange                    );
+        ENCODE_FIELD(           contract.currency                           );
+        ENCODE_FIELD(           contract.localSymbol                        );
+
+        if ( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS ) 
+        {
+            ENCODE_FIELD(       contract.tradingClass           );
+        }
+
+        ENCODE_FIELD(           volatility                                  );
+        ENCODE_FIELD(           underPrice                                  );
+
+        if ( m_serverVersion >= MIN_SERVER_VER_LINKING ) 
+        {
+            ENCODE_TAGVALUELIST(        miscOptions     );
+        }
+
+    }
+    catch ( EClientException&  ex ) 
+    {
+    
+        m_pEWrapper->error(             reqId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
+        return;
+    
+    }
+
+    closeAndSend( msg.str() );
+
+}
+
+//********************************************************************************************
+
+void EClient::cancelCalculateOptionPrice(  TickerId  reqId  ) 
+{
+
+    // not connected?
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()                 );
+        
+        return;
+    
+    }
+
+    if ( m_serverVersion < MIN_SERVER_VER_CANCEL_CALC_OPTION_PRICE ) 
+    {
+
+        m_pEWrapper->error(             reqId, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support calculate option price cancellation.");
+        
+        return;
+    
+    }
+
+    std::stringstream msg;
+
+    prepareBuffer( msg );
+
+    const int VERSION = 1;
+
+    ENCODE_FIELD(           CANCEL_CALC_OPTION_PRICE            );
+    ENCODE_FIELD(           VERSION                             );
+    ENCODE_FIELD(           reqId                               );
+
+    closeAndSend( msg.str() );
 
 }
 
@@ -1557,8 +1846,8 @@ void EClient::reqContractDetails(               int                 reqId,
         const int VERSION = 8;
 
         // send req mkt data msg
-        ENCODE_FIELD(   REQ_CONTRACT_DATA   );
-        ENCODE_FIELD(   VERSION             );
+        ENCODE_FIELD(       REQ_CONTRACT_DATA                           );
+        ENCODE_FIELD(       VERSION                                     );
 
         if ( m_serverVersion >= MIN_SERVER_VER_CONTRACT_DATA_CHAIN ) 
         {
@@ -1569,20 +1858,20 @@ void EClient::reqContractDetails(               int                 reqId,
 
 
         // send contract fields
-        ENCODE_FIELD(   contract.conId                              ); // srv v37 and above
-        ENCODE_FIELD(   contract.symbol                             );
-        ENCODE_FIELD(   contract.secType                            );
-        ENCODE_FIELD(   contract.lastTradeDateOrContractMonth       );
-        ENCODE_FIELD(   contract.strike                             );
-        ENCODE_FIELD(   contract.right                              );
-        ENCODE_FIELD(   contract.multiplier                         ); // srv v15 and above
+        ENCODE_FIELD(       contract.conId                              ); // srv v37 and above
+        ENCODE_FIELD(       contract.symbol                             );
+        ENCODE_FIELD(       contract.secType                            );
+        ENCODE_FIELD(       contract.lastTradeDateOrContractMonth       );
+        ENCODE_FIELD(       contract.strike                             );
+        ENCODE_FIELD(       contract.right                              );
+        ENCODE_FIELD(       contract.multiplier                         ); // srv v15 and above
 
 
         if ( m_serverVersion >= MIN_SERVER_VER_PRIMARYEXCH )
         {
 
-            ENCODE_FIELD(   contract.exchange           );
-            ENCODE_FIELD(   contract.primaryExchange    );
+            ENCODE_FIELD(       contract.exchange               );
+            ENCODE_FIELD(       contract.primaryExchange        );
         
         }
         else if ( m_serverVersion >= MIN_SERVER_VER_LINKING )
@@ -1590,17 +1879,17 @@ void EClient::reqContractDetails(               int                 reqId,
 
             if ( !contract.primaryExchange.empty() && ( contract.exchange == "BEST" || contract.exchange == "SMART" ) )
             {
-                ENCODE_FIELD(   contract.exchange + ":" + contract.primaryExchange      );
+                ENCODE_FIELD(       contract.exchange + ":" + contract.primaryExchange      );
             }
             else
             {
-                ENCODE_FIELD(   contract.exchange   );
+                ENCODE_FIELD(       contract.exchange                                       );
             }
 
         }
 
-        ENCODE_FIELD(   contract.currency       );
-        ENCODE_FIELD(   contract.localSymbol    );
+        ENCODE_FIELD(       contract.currency               );
+        ENCODE_FIELD(       contract.localSymbol            );
 
         if ( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS ) 
         {
@@ -1616,7 +1905,7 @@ void EClient::reqContractDetails(               int                 reqId,
         }
 
     }
-    catch ( EClientException& ex ) 
+    catch ( EClientException&  ex ) 
     {
 
         m_pEWrapper->error(             reqId, 
@@ -1641,10 +1930,17 @@ void EClient::reqContractDetails(               int                 reqId,
 
 void EClient::reqCurrentTime()
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
     // Not needed anymore validation
@@ -1656,13 +1952,14 @@ void EClient::reqCurrentTime()
     //}
 
     std::stringstream msg;
-    prepareBuffer( msg);
+
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
     // send current time req
-    ENCODE_FIELD( REQ_CURRENT_TIME);
-    ENCODE_FIELD( VERSION);
+    ENCODE_FIELD(           REQ_CURRENT_TIME            );
+    ENCODE_FIELD(           VERSION                     );
 
     closeAndSend( msg.str() );
 
@@ -1917,6 +2214,7 @@ void EClient::placeOrder(             OrderId           id,
 
     if ( m_serverVersion < MIN_SERVER_VER_DELTA_NEUTRAL_OPEN_CLOSE ) 
     {
+
         if (    !order.deltaNeutralOpenClose.empty()
              ||  order.deltaNeutralShortSale
              ||  order.deltaNeutralShortSaleSlot > 0 
@@ -2773,57 +3071,84 @@ void EClient::placeOrder(             OrderId           id,
 
 //*********************************************************************************************
 
-void EClient::cancelOrder( OrderId id)
+void EClient::cancelOrder(  OrderId  id  )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( id, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+    
+        m_pEWrapper->error(             id, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+    
         return;
+    
     }
 
     const int VERSION = 1;
 
     // send cancel order msg
     std::stringstream msg;
-    prepareBuffer( msg);
 
-    ENCODE_FIELD( CANCEL_ORDER);
-    ENCODE_FIELD( VERSION);
-    ENCODE_FIELD( id);
+    prepareBuffer( msg );
 
-    closeAndSend( msg.str());
+    ENCODE_FIELD(           CANCEL_ORDER            );
+    ENCODE_FIELD(           VERSION                 );
+    ENCODE_FIELD(           id                      );
+
+    closeAndSend( msg.str() );
+
 }
 
 //*********************************************************************************************
 
-void EClient::reqAccountUpdates(bool subscribe, const std::string& acctCode)
+void EClient::reqAccountUpdates(            bool            subscribe, 
+                                      const std::string&    acctCode            )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
 
-    try {
+    prepareBuffer( msg );
+
+    try 
+    {
+
         const int VERSION = 2;
 
         // send req acct msg
-        ENCODE_FIELD( REQ_ACCT_DATA);
-        ENCODE_FIELD( VERSION);
-        ENCODE_FIELD( subscribe);  // TRUE = subscribe, FALSE = unsubscribe.
+        ENCODE_FIELD(           REQ_ACCT_DATA           );
+        ENCODE_FIELD(           VERSION                 );
+        ENCODE_FIELD(           subscribe               );  // TRUE = subscribe, FALSE = unsubscribe.
 
         // Send the account code. This will only be used for FA clients
-        ENCODE_FIELD( acctCode); // srv v9 and above
+        ENCODE_FIELD(           acctCode                ); // srv v9 and above
+
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(NO_VALID_ID, ex.error().code(), ex.error().msg() + ex.text());
+    catch ( EClientException&  ex ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
         return;
+
     }
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
 
 }
 
@@ -2831,6 +3156,7 @@ void EClient::reqAccountUpdates(bool subscribe, const std::string& acctCode)
 
 void EClient::reqOpenOrders()
 {
+
     // not connected?
     if( !isConnected() ) 
     {
@@ -2850,8 +3176,8 @@ void EClient::reqOpenOrders()
     const int VERSION = 1;
 
     // send req open orders msg
-    ENCODE_FIELD(           REQ_OPEN_ORDERS         );
-    ENCODE_FIELD(           VERSION                 );
+    ENCODE_FIELD(           REQ_OPEN_ORDERS             );
+    ENCODE_FIELD(           VERSION                     );
 
 
     //**************************
@@ -2866,8 +3192,9 @@ void EClient::reqOpenOrders()
 
 //**********************************************************************************************
 
-void EClient::reqAutoOpenOrders(bool bAutoBind)
+void EClient::reqAutoOpenOrders(  bool  bAutoBind  )
 {
+
     // not connected?
     if( !isConnected()) {
         m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
@@ -2891,22 +3218,31 @@ void EClient::reqAutoOpenOrders(bool bAutoBind)
 
 void EClient::reqAllOpenOrders()
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+    
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+    
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
     // send req open orders msg
-    ENCODE_FIELD( REQ_ALL_OPEN_ORDERS);
-    ENCODE_FIELD( VERSION);
+    ENCODE_FIELD(           REQ_ALL_OPEN_ORDERS             );
+    ENCODE_FIELD(           VERSION                         );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //*********************************************************************************************
@@ -2981,48 +3317,65 @@ void EClient::reqExecutions(              int                   reqId,
 
 //********************************************************************************************
 
-void EClient::reqIds( int numIds)
+void EClient::reqIds(  int  numIds )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( numIds, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             numIds, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
     // send req open orders msg
-    ENCODE_FIELD( REQ_IDS);
-    ENCODE_FIELD( VERSION);
-    ENCODE_FIELD( numIds);
+    ENCODE_FIELD(           REQ_IDS             );
+    ENCODE_FIELD(           VERSION             );
+    ENCODE_FIELD(           numIds              );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //*********************************************************************************************
 
-void EClient::reqNewsBulletins(bool allMsgs)
+void EClient::reqNewsBulletins(  bool allMsgs  )
 {
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
     // send req news bulletins msg
-    ENCODE_FIELD( REQ_NEWS_BULLETINS);
-    ENCODE_FIELD( VERSION);
-    ENCODE_FIELD( allMsgs);
+    ENCODE_FIELD(           REQ_NEWS_BULLETINS          );
+    ENCODE_FIELD(           VERSION                     );
+    ENCODE_FIELD(           allMsgs                     );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //*********************************************************************************************
@@ -3030,44 +3383,61 @@ void EClient::reqNewsBulletins(bool allMsgs)
 void EClient::cancelNewsBulletins()
 {
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+    
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+    
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
     // send req news bulletins msg
-    ENCODE_FIELD( CANCEL_NEWS_BULLETINS);
-    ENCODE_FIELD( VERSION);
+    ENCODE_FIELD(           CANCEL_NEWS_BULLETINS           );
+    ENCODE_FIELD(           VERSION                         );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
-void EClient::setServerLogLevel(int logLevel)
+void EClient::setServerLogLevel( int  logLevel )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+
         return;
+
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
     // send the set server logging level message
-    ENCODE_FIELD( SET_SERVER_LOGLEVEL);
-    ENCODE_FIELD( VERSION);
-    ENCODE_FIELD( logLevel);
+    ENCODE_FIELD(           SET_SERVER_LOGLEVEL             );
+    ENCODE_FIELD(           VERSION                         );
+    ENCODE_FIELD(           logLevel                        );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //*********************************************************************************************
@@ -3075,31 +3445,46 @@ void EClient::setServerLogLevel(int logLevel)
 void EClient::reqManagedAccts()
 {
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    { 
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()                 );
+
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
     // send req FA managed accounts msg
-    ENCODE_FIELD( REQ_MANAGED_ACCTS);
-    ENCODE_FIELD( VERSION);
+    ENCODE_FIELD(           REQ_MANAGED_ACCTS           );
+    ENCODE_FIELD(           VERSION                     );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //*********************************************************************************************
 
-void EClient::requestFA(faDataType pFaDataType)
+void EClient::requestFA( faDataType  pFaDataType )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+    
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()              );
+    
         return;
+    
     }
 
     // Not needed anymore validation
@@ -3109,24 +3494,32 @@ void EClient::requestFA(faDataType pFaDataType)
     //}
 
     std::stringstream msg;
-    prepareBuffer( msg);
+
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
-    ENCODE_FIELD( REQ_FA);
-    ENCODE_FIELD( VERSION);
-    ENCODE_FIELD( (int)pFaDataType);
+    ENCODE_FIELD(           REQ_FA                  );
+    ENCODE_FIELD(           VERSION                 );
+    ENCODE_FIELD(      (int)pFaDataType             );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //*********************************************************************************************
 
-void EClient::replaceFA(int reqId, faDataType pFaDataType, const std::string& cxml)
+void EClient::replaceFA(            int             reqId, 
+                                    faDataType      pFaDataType, 
+                              const std::string&    cxml                 )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
         return;
     }
 
@@ -3139,35 +3532,57 @@ void EClient::replaceFA(int reqId, faDataType pFaDataType, const std::string& cx
     std::stringstream msg;
     prepareBuffer( msg);
 
-    try {
+    try 
+    {
+
         const int VERSION = 1;
 
-        ENCODE_FIELD( REPLACE_FA);
-        ENCODE_FIELD( VERSION);
-        ENCODE_FIELD( (int)pFaDataType);
-        ENCODE_FIELD( cxml);
-        if (m_serverVersion >= MIN_SERVER_VER_REPLACE_FA_END) {
-            ENCODE_FIELD(reqId);
+        ENCODE_FIELD(           REPLACE_FA              );
+        ENCODE_FIELD(           VERSION                 );
+        ENCODE_FIELD(      (int)pFaDataType             );
+        ENCODE_FIELD(           cxml                    );
+        
+        if ( m_serverVersion >= MIN_SERVER_VER_REPLACE_FA_END ) 
+        {
+            ENCODE_FIELD(       reqId       );
         }
+
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(reqId, ex.error().code(), ex.error().msg() + ex.text());
+    catch ( EClientException&  ex ) 
+    {
+
+        m_pEWrapper->error(             reqId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()        );
+        
         return;
+    
     }
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //*********************************************************************************************
 
-void EClient::exerciseOptions( TickerId tickerId, const Contract& contract,
-                              int exerciseAction, int exerciseQuantity,
-                              const std::string& account, int override)
+void EClient::exerciseOptions(              TickerId        tickerId, 
+                                      const Contract&       contract,
+                                            int             exerciseAction, 
+                                            int             exerciseQuantity,
+                                      const std::string&    account, 
+                                            int             override                )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
     // Not needed anymore validation
@@ -3176,80 +3591,118 @@ void EClient::exerciseOptions( TickerId tickerId, const Contract& contract,
     //	return;
     //}
 
-    if (m_serverVersion < MIN_SERVER_VER_TRADING_CLASS) {
-        if( !contract.tradingClass.empty() || (contract.conId > 0)) {
-            m_pEWrapper->error( tickerId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support conId, multiplier and tradingClass parameters in exerciseOptions.");
+    if ( m_serverVersion < MIN_SERVER_VER_TRADING_CLASS ) 
+    {
+
+        if( !contract.tradingClass.empty() || ( contract.conId > 0 ) ) 
+        {
+
+            m_pEWrapper->error(             tickerId, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + "  It does not support conId, multiplier and tradingClass parameters in exerciseOptions.");
+            
             return;
+        
         }
+
     }
 
     
     std::stringstream msg;
-    prepareBuffer( msg);
 
-    try {
+    prepareBuffer( msg );
+
+    try 
+    {
+
         const int VERSION = 2;
 
-        ENCODE_FIELD( EXERCISE_OPTIONS);
-        ENCODE_FIELD( VERSION);
-        ENCODE_FIELD( tickerId);
+        ENCODE_FIELD(           EXERCISE_OPTIONS                );
+        ENCODE_FIELD(           VERSION                         );
+        ENCODE_FIELD(           tickerId                        );
 
         // send contract fields
-        if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
-            ENCODE_FIELD( contract.conId);
+        if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS ) 
+        {
+            ENCODE_FIELD(       contract.conId          );
         }
-        ENCODE_FIELD( contract.symbol);
-        ENCODE_FIELD( contract.secType);
-        ENCODE_FIELD( contract.lastTradeDateOrContractMonth);
-        ENCODE_FIELD( contract.strike);
-        ENCODE_FIELD( contract.right);
-        ENCODE_FIELD( contract.multiplier);
-        ENCODE_FIELD( contract.exchange);
-        ENCODE_FIELD( contract.currency);
-        ENCODE_FIELD( contract.localSymbol);
-        if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
-            ENCODE_FIELD( contract.tradingClass);
+
+        ENCODE_FIELD(           contract.symbol                             );
+        ENCODE_FIELD(           contract.secType                            );
+        ENCODE_FIELD(           contract.lastTradeDateOrContractMonth       );
+        ENCODE_FIELD(           contract.strike                             );
+        ENCODE_FIELD(           contract.right                              );
+        ENCODE_FIELD(           contract.multiplier                         );
+        ENCODE_FIELD(           contract.exchange                           );
+        ENCODE_FIELD(           contract.currency                           );
+        ENCODE_FIELD(           contract.localSymbol                        );
+
+        if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS ) 
+        {
+            ENCODE_FIELD(           contract.tradingClass           );
         }
-        ENCODE_FIELD( exerciseAction);
-        ENCODE_FIELD( exerciseQuantity);
-        ENCODE_FIELD( account);
-        ENCODE_FIELD( override);
+        
+        ENCODE_FIELD(           exerciseAction                              );
+        ENCODE_FIELD(           exerciseQuantity                            );
+        ENCODE_FIELD(           account                                     );
+        ENCODE_FIELD(           override                                    );
+    
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(tickerId, ex.error().code(), ex.error().msg() + ex.text());
+    catch ( EClientException&  ex ) 
+    {
+    
+        m_pEWrapper->error(             tickerId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+    
         return;
+    
     }
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //*********************************************************************************************
 
 void EClient::reqGlobalCancel()
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
-    if (m_serverVersion < MIN_SERVER_VER_REQ_GLOBAL_CANCEL) {
-        m_pEWrapper->error( NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support globalCancel requests.");
+    if ( m_serverVersion < MIN_SERVER_VER_REQ_GLOBAL_CANCEL ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support globalCancel requests.");
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+    
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
     // send current time req
-    ENCODE_FIELD( REQ_GLOBAL_CANCEL);
-    ENCODE_FIELD( VERSION);
+    ENCODE_FIELD(           REQ_GLOBAL_CANCEL           );
+    ENCODE_FIELD(           VERSION                     );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //*********************************************************************************************
@@ -3299,27 +3752,41 @@ void EClient::reqMarketDataType(  int  marketDataType  )
 
 void EClient::reqPositions()
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+    
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+    
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_POSITIONS) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support positions request.");
+    if( m_serverVersion < MIN_SERVER_VER_POSITIONS ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support positions request.");
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
-    ENCODE_FIELD( REQ_POSITIONS);
-    ENCODE_FIELD( VERSION);
+    ENCODE_FIELD(           REQ_POSITIONS           );
+    ENCODE_FIELD(           VERSION                 );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //*********************************************************************************************
@@ -3327,332 +3794,544 @@ void EClient::reqPositions()
 void EClient::cancelPositions()
 {
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_POSITIONS) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support positions cancellation.");
+    if( m_serverVersion < MIN_SERVER_VER_POSITIONS) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support positions cancellation.");
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+    
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
-    ENCODE_FIELD( CANCEL_POSITIONS);
-    ENCODE_FIELD( VERSION);
+    ENCODE_FIELD(           CANCEL_POSITIONS            );
+    ENCODE_FIELD(           VERSION                     );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
-void EClient::reqAccountSummary( int reqId, const std::string& groupName, const std::string& tags)
+void EClient::reqAccountSummary(            int             reqId, 
+                                      const std::string&    groupName, 
+                                      const std::string&    tags                )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()                     );
+        
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_ACCOUNT_SUMMARY) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support account summary request.");
+    if( m_serverVersion < MIN_SERVER_VER_ACCOUNT_SUMMARY )  
+    {
+
+        m_pEWrapper->error(         NO_VALID_ID, 
+                                    UPDATE_TWS.code(), 
+                                    UPDATE_TWS.msg() + "  It does not support account summary request.");
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+    
+    prepareBuffer( msg );
 
-    try {
+    try 
+    {
+
         const int VERSION = 1;
 
-        ENCODE_FIELD( REQ_ACCOUNT_SUMMARY);
-        ENCODE_FIELD( VERSION);
-        ENCODE_FIELD( reqId);
-        ENCODE_FIELD( groupName);
-        ENCODE_FIELD( tags);
+        ENCODE_FIELD(           REQ_ACCOUNT_SUMMARY             );
+        ENCODE_FIELD(           VERSION                         );
+        ENCODE_FIELD(           reqId                           );
+        ENCODE_FIELD(           groupName                       );
+        ENCODE_FIELD(           tags                            );
+    
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(reqId, ex.error().code(), ex.error().msg() + ex.text());
+    catch ( EClientException&  ex ) 
+    {
+
+        m_pEWrapper->error(                 reqId, 
+                                            ex.error().code(), 
+                                            ex.error().msg() + ex.text()            );
+        
         return;
+    
     }
 
-    closeAndSend( msg.str());
+    closeAndSend(  msg.str() );
+
 }
 
 //**********************************************************************************************
 
-void EClient::cancelAccountSummary( int reqId)
+void EClient::cancelAccountSummary( int  reqId )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_ACCOUNT_SUMMARY) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support account summary cancellation.");
+    if( m_serverVersion < MIN_SERVER_VER_ACCOUNT_SUMMARY ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support account summary cancellation.");
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+    
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
-    ENCODE_FIELD( CANCEL_ACCOUNT_SUMMARY);
-    ENCODE_FIELD( VERSION);
-    ENCODE_FIELD( reqId);
+    ENCODE_FIELD(           CANCEL_ACCOUNT_SUMMARY              );
+    ENCODE_FIELD(           VERSION                             );
+    ENCODE_FIELD(           reqId                               );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //*********************************************************************************************
 
-void EClient::verifyRequest(const std::string& apiName, const std::string& apiVersion)
+void EClient::verifyRequest(        const std::string&      apiName, 
+                                    const std::string&      apiVersion          )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+    
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+    
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_LINKING) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support verification request.");
+    if( m_serverVersion < MIN_SERVER_VER_LINKING ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support verification request.");
+        
         return;
+    
     }
 
-    if( !m_extraAuth) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  Intent to authenticate needs to be expressed during initial connect request.");
+    if( !m_extraAuth ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  Intent to authenticate needs to be expressed during initial connect request.");
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+    prepareBuffer( msg );
 
-    try {
+    try 
+    {
+
         const int VERSION = 1;
 
-        ENCODE_FIELD( VERIFY_REQUEST);
-        ENCODE_FIELD( VERSION);
-        ENCODE_FIELD( apiName);
-        ENCODE_FIELD( apiVersion);
+        ENCODE_FIELD(           VERIFY_REQUEST              );
+        ENCODE_FIELD(           VERSION                     );
+        ENCODE_FIELD(           apiName                     );
+        ENCODE_FIELD(           apiVersion                  );
+
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(NO_VALID_ID, ex.error().code(), ex.error().msg() + ex.text());
+    catch ( EClientException&  ex ) 
+    {
+    
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+    
         return;
+    
     }
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
 }
 
 //*********************************************************************************************
 
-void EClient::verifyMessage(const std::string& apiData)
+void EClient::verifyMessage(  const std::string&  apiData  )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_LINKING) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support verification message sending.");
+    if( m_serverVersion < MIN_SERVER_VER_LINKING ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support verification message sending.");
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
 
-    try {
+    prepareBuffer( msg );
+
+    try 
+    {
+
         const int VERSION = 1;
 
-        ENCODE_FIELD( VERIFY_MESSAGE);
-        ENCODE_FIELD( VERSION);
-        ENCODE_FIELD( apiData);
+        ENCODE_FIELD(           VERIFY_MESSAGE          );
+        ENCODE_FIELD(           VERSION                 );
+        ENCODE_FIELD(           apiData                 );
+
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(NO_VALID_ID, ex.error().code(), ex.error().msg() + ex.text());
+    catch ( EClientException&  ex ) 
+    {
+    
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+    
         return;
+    
     }
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //*********************************************************************************************
 
-void EClient::verifyAndAuthRequest(const std::string& apiName, const std::string& apiVersion, const std::string& opaqueIsvKey)
+void EClient::verifyAndAuthRequest(     const std::string&      apiName, 
+                                        const std::string&      apiVersion, 
+                                        const std::string&      opaqueIsvKey        )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()                 );
+        
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_LINKING_AUTH) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support verification request.");
+    if( m_serverVersion < MIN_SERVER_VER_LINKING_AUTH ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support verification request.");
+        
         return;
+    
     }
 
-    if( !m_extraAuth) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  Intent to authenticate needs to be expressed during initial connect request.");
+    if( !m_extraAuth ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  Intent to authenticate needs to be expressed during initial connect request.");
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
 
-    try {
+    prepareBuffer( msg );
+
+    try 
+    {
+
         const int VERSION = 1;
 
-        ENCODE_FIELD( VERIFY_AND_AUTH_REQUEST);
-        ENCODE_FIELD( VERSION);
-        ENCODE_FIELD( apiName);
-        ENCODE_FIELD( apiVersion);
-        ENCODE_FIELD( opaqueIsvKey);
+        ENCODE_FIELD(           VERIFY_AND_AUTH_REQUEST             );
+        ENCODE_FIELD(           VERSION                             );
+        ENCODE_FIELD(           apiName                             );
+        ENCODE_FIELD(           apiVersion                          );
+        ENCODE_FIELD(           opaqueIsvKey                        );
+    
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(NO_VALID_ID, ex.error().code(), ex.error().msg() + ex.text());
+    catch ( EClientException&  ex ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
         return;
+    
     }
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
-void EClient::verifyAndAuthMessage(const std::string& apiData, const std::string& xyzResponse)
+void EClient::verifyAndAuthMessage(         const std::string&      apiData, 
+                                            const std::string&      xyzResponse         )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+     
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+     
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_LINKING_AUTH) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support verification message sending.");
+    if( m_serverVersion < MIN_SERVER_VER_LINKING_AUTH ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support verification message sending.");
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
 
-    try {
+    prepareBuffer( msg );
+
+
+    try 
+    {
+
         const int VERSION = 1;
 
-        ENCODE_FIELD( VERIFY_AND_AUTH_MESSAGE);
-        ENCODE_FIELD( VERSION);
-        ENCODE_FIELD( apiData);
-        ENCODE_FIELD( xyzResponse);
+        ENCODE_FIELD(           VERIFY_AND_AUTH_MESSAGE             );
+        ENCODE_FIELD(           VERSION                             );
+        ENCODE_FIELD(           apiData                             );
+        ENCODE_FIELD(           xyzResponse                         );
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(NO_VALID_ID, ex.error().code(), ex.error().msg() + ex.text());
+    catch ( EClientException&  ex ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
         return;
+    
     }
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
-void EClient::queryDisplayGroups( int reqId)
+//********************************************************************************************
+
+void EClient::queryDisplayGroups(  int  reqId  )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()                 );
+        
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_LINKING) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support queryDisplayGroups request.");
+    if( m_serverVersion < MIN_SERVER_VER_LINKING ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support queryDisplayGroups request.");
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+    
+    prepareBuffer( msg );
+
+    const int VERSION = 1;
+                            
+    ENCODE_FIELD(           QUERY_DISPLAY_GROUPS            );
+    ENCODE_FIELD(           VERSION                         );
+    ENCODE_FIELD(           reqId                           );
+
+    closeAndSend( msg.str() );
+
+}
+
+//********************************************************************************************
+
+void EClient::subscribeToGroupEvents(       int     reqId, 
+                                            int     groupId     )
+{
+
+    // not connected?
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+
+        return;
+
+    }
+
+    if( m_serverVersion < MIN_SERVER_VER_LINKING ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support subscribeToGroupEvents request.");
+        
+        return;
+    
+    }
+
+    std::stringstream msg;
+
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
-    ENCODE_FIELD( QUERY_DISPLAY_GROUPS);
-    ENCODE_FIELD( VERSION);
-    ENCODE_FIELD( reqId);
+    ENCODE_FIELD(           SUBSCRIBE_TO_GROUP_EVENTS           );
+    ENCODE_FIELD(           VERSION                             );
+    ENCODE_FIELD(           reqId                               );
+    ENCODE_FIELD(           groupId                             );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
-void EClient::subscribeToGroupEvents( int reqId, int groupId)
+void EClient::updateDisplayGroup(           int             reqId, 
+                                      const std::string&    contractInfo        )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_LINKING) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support subscribeToGroupEvents request.");
+    if( m_serverVersion < MIN_SERVER_VER_LINKING ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support updateDisplayGroup request.");
+        
         return;
+
     }
+
 
     std::stringstream msg;
-    prepareBuffer( msg);
 
-    const int VERSION = 1;
+    prepareBuffer( msg );
 
-    ENCODE_FIELD( SUBSCRIBE_TO_GROUP_EVENTS);
-    ENCODE_FIELD( VERSION);
-    ENCODE_FIELD( reqId);
-    ENCODE_FIELD( groupId);
+    try 
+    {
 
-    closeAndSend( msg.str());
-}
-
-//********************************************************************************************
-
-void EClient::updateDisplayGroup( int reqId, const std::string& contractInfo)
-{
-    // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
-        return;
-    }
-
-    if( m_serverVersion < MIN_SERVER_VER_LINKING) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support updateDisplayGroup request.");
-        return;
-    }
-
-    std::stringstream msg;
-    prepareBuffer( msg);
-
-    try {
         const int VERSION = 1;
 
-        ENCODE_FIELD( UPDATE_DISPLAY_GROUP);
-        ENCODE_FIELD( VERSION);
-        ENCODE_FIELD( reqId);
-        ENCODE_FIELD( contractInfo);
+        ENCODE_FIELD(           UPDATE_DISPLAY_GROUP            );
+        ENCODE_FIELD(           VERSION                         );
+        ENCODE_FIELD(           reqId                           );
+        ENCODE_FIELD(           contractInfo                    );
+
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(reqId, ex.error().code(), ex.error().msg() + ex.text());
+    catch ( EClientException&  ex ) 
+    {
+
+        m_pEWrapper->error(             reqId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
         return;
+    
     }
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
@@ -3660,834 +4339,1395 @@ void EClient::updateDisplayGroup( int reqId, const std::string& contractInfo)
 void EClient::startApi()
 {
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
-    if( m_serverVersion >= 3) {
-        if( m_serverVersion < MIN_SERVER_VER_LINKING) {
+    if( m_serverVersion >= 3 ) 
+    {
+
+        if( m_serverVersion < MIN_SERVER_VER_LINKING ) 
+        {
+
             std::stringstream msg;
-            ENCODE_FIELD( m_clientId);
-            bufferedSend( msg.str());
+            
+            ENCODE_FIELD(           m_clientId              );
+            
+            bufferedSend( msg.str() );
+        
         }
         else
         {
-            std::stringstream msg;
-            prepareBuffer( msg);
 
-            try {
+            std::stringstream msg;
+            
+            prepareBuffer( msg );
+
+            try 
+            {
+
                 const int VERSION = 2;
 
-                ENCODE_FIELD( START_API);
-                ENCODE_FIELD( VERSION);
-                ENCODE_FIELD( m_clientId);
+                ENCODE_FIELD(           START_API               );
+                ENCODE_FIELD(           VERSION                 );
+                ENCODE_FIELD(           m_clientId              );
 
-                if (m_serverVersion >= MIN_SERVER_VER_OPTIONAL_CAPABILITIES)
-                    ENCODE_FIELD(m_optionalCapabilities);
+                if ( m_serverVersion >= MIN_SERVER_VER_OPTIONAL_CAPABILITIES )
+                    ENCODE_FIELD(       m_optionalCapabilities       );
             }
-            catch (EClientException& ex) {
-                m_pEWrapper->error(NO_VALID_ID, ex.error().code(), ex.error().msg() + ex.text());
+            catch ( EClientException& ex ) 
+            {
+
+                m_pEWrapper->error(             NO_VALID_ID, 
+                                                ex.error().code(), 
+                                                ex.error().msg() + ex.text()            );
+                
                 return;
+            
             }
 
-            closeAndSend( msg.str());
+            closeAndSend( msg.str() );
+
         }
+
     }
+
 }
 
 //********************************************************************************************
 
-void EClient::unsubscribeFromGroupEvents( int reqId)
+void EClient::unsubscribeFromGroupEvents(  int  reqId  )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()                 );
+        
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_LINKING) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support unsubscribeFromGroupEvents request.");
+    if( m_serverVersion < MIN_SERVER_VER_LINKING ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support unsubscribeFromGroupEvents request.");
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
-    ENCODE_FIELD( UNSUBSCRIBE_FROM_GROUP_EVENTS);
-    ENCODE_FIELD( VERSION);
-    ENCODE_FIELD( reqId);
+    ENCODE_FIELD(           UNSUBSCRIBE_FROM_GROUP_EVENTS           );
+    ENCODE_FIELD(           VERSION                                 );
+    ENCODE_FIELD(           reqId                                   );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
-void EClient::reqPositionsMulti( int reqId, const std::string& account, const std::string& modelCode)
+void EClient::reqPositionsMulti(            int             reqId, 
+                                      const std::string&    account, 
+                                      const std::string&    modelCode       )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+
         return;
+
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_MODELS_SUPPORT) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support positions multi request.");
+    if( m_serverVersion < MIN_SERVER_VER_MODELS_SUPPORT ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support positions multi request.");
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
 
-    try {
+    prepareBuffer( msg );
+
+    try 
+    {
+
         const int VERSION = 1;
 
-        ENCODE_FIELD( REQ_POSITIONS_MULTI);
-        ENCODE_FIELD( VERSION);
-        ENCODE_FIELD( reqId);
-        ENCODE_FIELD( account);
-        ENCODE_FIELD( modelCode);
+        ENCODE_FIELD(           REQ_POSITIONS_MULTI             );
+        ENCODE_FIELD(           VERSION                         );
+        ENCODE_FIELD(           reqId                           );
+        ENCODE_FIELD(           account                         );
+        ENCODE_FIELD(           modelCode                       );
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(reqId, ex.error().code(), ex.error().msg() + ex.text());
+    catch ( EClientException&  ex ) 
+    {
+
+        m_pEWrapper->error(             reqId,      
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
         return;
+    
     }
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
-void EClient::cancelPositionsMulti( int reqId)
+void EClient::cancelPositionsMulti(  int  reqId )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_MODELS_SUPPORT) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support positions multi cancellation.");
+    if( m_serverVersion < MIN_SERVER_VER_MODELS_SUPPORT ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support positions multi cancellation.");
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+    
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
-    ENCODE_FIELD( CANCEL_POSITIONS_MULTI);
-    ENCODE_FIELD( VERSION);
-    ENCODE_FIELD( reqId);
+    ENCODE_FIELD(           CANCEL_POSITIONS_MULTI              );
+    ENCODE_FIELD(           VERSION                             );
+    ENCODE_FIELD(           reqId                               );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
-void EClient::reqAccountUpdatesMulti( int reqId, const std::string& account, const std::string& modelCode, bool ledgerAndNLV)
+void EClient::reqAccountUpdatesMulti(           int             reqId, 
+                                          const std::string&    account, 
+                                          const std::string&    modelCode, 
+                                                bool            ledgerAndNLV        )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()                 );
+        
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_MODELS_SUPPORT) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support account updates multi request.");
+    if( m_serverVersion < MIN_SERVER_VER_MODELS_SUPPORT ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support account updates multi request.");
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
 
-    try {
+    prepareBuffer( msg );
+
+    try 
+    {
+
         const int VERSION = 1;
 
-        ENCODE_FIELD( REQ_ACCOUNT_UPDATES_MULTI);
-        ENCODE_FIELD( VERSION);
-        ENCODE_FIELD( reqId);
-        ENCODE_FIELD( account);
-        ENCODE_FIELD( modelCode);
-        ENCODE_FIELD( ledgerAndNLV);
+        ENCODE_FIELD(           REQ_ACCOUNT_UPDATES_MULTI           );
+        ENCODE_FIELD(           VERSION                             );
+        ENCODE_FIELD(           reqId                               );
+        ENCODE_FIELD(           account                             );
+        ENCODE_FIELD(           modelCode                           );
+        ENCODE_FIELD(           ledgerAndNLV                        );
+
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(reqId, ex.error().code(), ex.error().msg() + ex.text());
+    catch ( EClientException& ex ) 
+    {
+
+        m_pEWrapper->error(             reqId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
         return;
+    
     }
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
-void EClient::cancelAccountUpdatesMulti( int reqId)
+void EClient::cancelAccountUpdatesMulti(  int  reqId  )
 {
+
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_MODELS_SUPPORT) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support account updates multi cancellation.");
+    if( m_serverVersion < MIN_SERVER_VER_MODELS_SUPPORT ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support account updates multi cancellation.");
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer( msg);
+
+    prepareBuffer( msg );
 
     const int VERSION = 1;
 
-    ENCODE_FIELD( CANCEL_ACCOUNT_UPDATES_MULTI);
-    ENCODE_FIELD( VERSION);
-    ENCODE_FIELD( reqId);
+    ENCODE_FIELD(           CANCEL_ACCOUNT_UPDATES_MULTI            );
+    ENCODE_FIELD(           VERSION                                 );
+    ENCODE_FIELD(           reqId                                   );
 
-    closeAndSend( msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
-void EClient::reqSecDefOptParams(int reqId, const std::string& underlyingSymbol, const std::string& futFopExchange, const std::string& underlyingSecType, int underlyingConId)
+void EClient::reqSecDefOptParams(               int             reqId, 
+                                          const std::string&    underlyingSymbol, 
+                                          const std::string&    futFopExchange, 
+                                          const std::string&    underlyingSecType, 
+                                                int             underlyingConId           )
 {
     // not connected?
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_SEC_DEF_OPT_PARAMS_REQ) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support security definiton option requests.");
+    if( m_serverVersion < MIN_SERVER_VER_SEC_DEF_OPT_PARAMS_REQ ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support security definiton option requests.");
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer(msg);
 
-    try {
-        ENCODE_FIELD(REQ_SEC_DEF_OPT_PARAMS);
-        ENCODE_FIELD(reqId);
-        ENCODE_FIELD(underlyingSymbol); 
-        ENCODE_FIELD(futFopExchange);
-        ENCODE_FIELD(underlyingSecType);
-        ENCODE_FIELD(underlyingConId);
+    prepareBuffer( msg );
+
+    try 
+    {
+
+        ENCODE_FIELD(           REQ_SEC_DEF_OPT_PARAMS              );
+        ENCODE_FIELD(           reqId                               );
+        ENCODE_FIELD(           underlyingSymbol                    ); 
+        ENCODE_FIELD(           futFopExchange                      );
+        ENCODE_FIELD(           underlyingSecType                   );
+        ENCODE_FIELD(           underlyingConId                     );
+    
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(reqId, ex.error().code(), ex.error().msg() + ex.text());
+    catch ( EClientException&  ex ) 
+    {
+
+        m_pEWrapper->error(             reqId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
         return;
+    
     }
 
-    closeAndSend(msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
-void EClient::reqSoftDollarTiers(int reqId)
+void EClient::reqSoftDollarTiers(  int  reqId  )
 {
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer(msg);
+    
+    prepareBuffer( msg );
 
 
-    ENCODE_FIELD(REQ_SOFT_DOLLAR_TIERS);
-    ENCODE_FIELD(reqId);
+    ENCODE_FIELD(           REQ_SOFT_DOLLAR_TIERS           );
+    ENCODE_FIELD(           reqId                           );
 
-    closeAndSend(msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
 void EClient::reqFamilyCodes()
 {
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_REQ_FAMILY_CODES) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support family codes requests.");
+    if( m_serverVersion < MIN_SERVER_VER_REQ_FAMILY_CODES ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support family codes requests.");
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer(msg);
 
-    ENCODE_FIELD(REQ_FAMILY_CODES);
+    prepareBuffer( msg );
 
-    closeAndSend(msg.str());
+    ENCODE_FIELD(           REQ_FAMILY_CODES            );
+
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
-void EClient::reqMatchingSymbols(int reqId, const std::string& pattern)
+void EClient::reqMatchingSymbols(           int             reqId, 
+                                      const std::string&    pattern         )
 {
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_REQ_MATCHING_SYMBOLS) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support matching symbols requests.");
+    if( m_serverVersion < MIN_SERVER_VER_REQ_MATCHING_SYMBOLS ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support matching symbols requests.");
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer(msg);
 
-    try {
-        ENCODE_FIELD(REQ_MATCHING_SYMBOLS);
-        ENCODE_FIELD(reqId);
-        ENCODE_FIELD(pattern);
+    prepareBuffer( msg );
+
+    try 
+    {
+        ENCODE_FIELD(           REQ_MATCHING_SYMBOLS            );
+        ENCODE_FIELD(           reqId                           );
+        ENCODE_FIELD(           pattern                         );
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(reqId, ex.error().code(), ex.error().msg() + ex.text());
+    catch ( EClientException&  ex ) 
+    {
+
+        m_pEWrapper->error(             reqId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
         return;
+    
     }
 
-    closeAndSend(msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
 void EClient::reqMktDepthExchanges()
 {
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_REQ_MKT_DEPTH_EXCHANGES) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support market depth exchanges requests.");
+    if( m_serverVersion < MIN_SERVER_VER_REQ_MKT_DEPTH_EXCHANGES ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support market depth exchanges requests.");
+        
         return;
+
     }
 
 
     std::stringstream msg;
-    prepareBuffer(msg);
 
-    ENCODE_FIELD(REQ_MKT_DEPTH_EXCHANGES);
+    prepareBuffer( msg );
 
-    closeAndSend(msg.str());
+    ENCODE_FIELD(           REQ_MKT_DEPTH_EXCHANGES             );
+
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
-void EClient::reqSmartComponents(int reqId, std::string bboExchange) 
+void EClient::reqSmartComponents(       int             reqId, 
+                                        std::string     bboExchange         ) 
 {
-    if (!isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+
+    if ( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
-    if (m_serverVersion < MIN_SERVER_VER_REQ_SMART_COMPONENTS) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support smart components request.");
+    if ( m_serverVersion < MIN_SERVER_VER_REQ_SMART_COMPONENTS ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support smart components request.");
+        
         return;
+
     }
 
     std::stringstream msg;
-    prepareBuffer(msg);
 
-    try {
-        ENCODE_FIELD(REQ_SMART_COMPONENTS);
-        ENCODE_FIELD(reqId);
-        ENCODE_FIELD(bboExchange);
+    prepareBuffer( msg );
+
+    try 
+    {
+
+        ENCODE_FIELD(           REQ_SMART_COMPONENTS            );
+        ENCODE_FIELD(           reqId                           );
+        ENCODE_FIELD(           bboExchange                     );
+    
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(reqId, ex.error().code(), ex.error().msg() + ex.text());
+    catch ( EClientException&  ex ) 
+    {
+
+        m_pEWrapper->error(             reqId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
         return;
+    
     }
 
-    closeAndSend(msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
 
 void EClient::reqNewsProviders()
 {
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_REQ_NEWS_PROVIDERS) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support news providers requests.");
+    if( m_serverVersion < MIN_SERVER_VER_REQ_NEWS_PROVIDERS ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support news providers requests.");
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer(msg);
+    
+    prepareBuffer( msg );
 
-    ENCODE_FIELD(REQ_NEWS_PROVIDERS);
+    ENCODE_FIELD(           REQ_NEWS_PROVIDERS              );
 
-    closeAndSend(msg.str());
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
-
-void EClient::reqNewsArticle(int requestId, const std::string& providerCode, const std::string& articleId, const TagValueListSPtr& newsArticleOptions)
+ 
+void EClient::reqNewsArticle(           int                 requestId, 
+                                  const std::string&        providerCode, 
+                                  const std::string&        articleId, 
+                                  const TagValueListSPtr&   newsArticleOptions      )
 {
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()                 );
+        
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_REQ_NEWS_ARTICLE) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support news article requests.");
+    if( m_serverVersion < MIN_SERVER_VER_REQ_NEWS_ARTICLE ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support news article requests.");
+        
         return;
+    
     }
 
     std::stringstream msg;
-    prepareBuffer(msg);
 
-    try {
-        ENCODE_FIELD(REQ_NEWS_ARTICLE);
-        ENCODE_FIELD(requestId);
-        ENCODE_FIELD(providerCode);
-        ENCODE_FIELD(articleId);
+    prepareBuffer( msg );
+
+    try 
+    {
+
+        ENCODE_FIELD(           REQ_NEWS_ARTICLE            );
+        ENCODE_FIELD(           requestId                   );
+        ENCODE_FIELD(           providerCode                );
+        ENCODE_FIELD(           articleId                   );
 
         // send newsArticleOptions parameter
-        if( m_serverVersion >= MIN_SERVER_VER_NEWS_QUERY_ORIGINS) {
-            ENCODE_TAGVALUELIST(newsArticleOptions);
+        if( m_serverVersion >= MIN_SERVER_VER_NEWS_QUERY_ORIGINS ) 
+        {
+            ENCODE_TAGVALUELIST(        newsArticleOptions          );
         }
+
     }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(requestId, ex.error().code(), ex.error().msg() + ex.text());
+    catch ( EClientException&  ex ) 
+    {
+    
+        m_pEWrapper->error(             requestId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+    
         return;
+    
     }
 
-    closeAndSend(msg.str());
-}
-
-//********************************************************************************************
-
-void EClient::reqHistoricalNews(int requestId, int conId, const std::string& providerCodes, const std::string& startDateTime, const std::string& endDateTime, int totalResults,
-                                const TagValueListSPtr& historicalNewsOptions)
-{
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
-        return;
-    }
-
-    if( m_serverVersion < MIN_SERVER_VER_REQ_HISTORICAL_NEWS) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support historical news requests.");
-        return;
-    }
-
-    std::stringstream msg;
-    prepareBuffer(msg);
-
-    try {
-        ENCODE_FIELD(REQ_HISTORICAL_NEWS);
-        ENCODE_FIELD(requestId);
-        ENCODE_FIELD(conId);
-        ENCODE_FIELD(providerCodes);
-        ENCODE_FIELD(startDateTime);
-        ENCODE_FIELD(endDateTime);
-        ENCODE_FIELD(totalResults);
-
-        // send historicalNewsOptions parameter
-        if( m_serverVersion >= MIN_SERVER_VER_NEWS_QUERY_ORIGINS) {
-            ENCODE_TAGVALUELIST(historicalNewsOptions);
-        }
-    }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(requestId, ex.error().code(), ex.error().msg() + ex.text());
-        return;
-    }
-
-    closeAndSend(msg.str());
-}
-
-//********************************************************************************************
-
-void EClient::reqHeadTimestamp(int tickerId, const Contract &contract, const std::string& whatToShow, int useRTH, int formatDate)
-{
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
-        return;
-    }
-
-    if( m_serverVersion < MIN_SERVER_VER_REQ_HEAD_TIMESTAMP) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support head timestamp requests.");
-        return;
-    }
-
-    std::stringstream msg;
-    prepareBuffer(msg);
-
-    try {
-        ENCODE_FIELD(REQ_HEAD_TIMESTAMP);
-        ENCODE_FIELD(tickerId);
-        ENCODE_FIELD(contract.conId);
-        ENCODE_FIELD(contract.symbol);
-        ENCODE_FIELD(contract.secType);
-        ENCODE_FIELD(contract.lastTradeDateOrContractMonth);
-        ENCODE_FIELD(contract.strike);
-        ENCODE_FIELD(contract.right);
-        ENCODE_FIELD(contract.multiplier);
-        ENCODE_FIELD(contract.exchange);
-        ENCODE_FIELD(contract.primaryExchange);
-        ENCODE_FIELD(contract.currency);
-        ENCODE_FIELD(contract.localSymbol);
-        ENCODE_FIELD(contract.tradingClass);
-        ENCODE_FIELD(contract.includeExpired);
-        ENCODE_FIELD(useRTH);
-        ENCODE_FIELD(whatToShow);          
-        ENCODE_FIELD(formatDate);
-    }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(tickerId, ex.error().code(), ex.error().msg() + ex.text());
-        return;
-    }
-
-    closeAndSend(msg.str());
-}
-
-//********************************************************************************************
-
-void EClient::cancelHeadTimestamp(int tickerId) {
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
-        return;
-    }
-
-    if( m_serverVersion < MIN_SERVER_VER_CANCEL_HEADTIMESTAMP) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support head timestamp requests canceling.");
-        return;
-    }
-
-    std::stringstream msg;
-    prepareBuffer(msg);
-
-    ENCODE_FIELD(CANCEL_HEAD_TIMESTAMP);
-    ENCODE_FIELD(tickerId);
-
-    closeAndSend(msg.str());
-}
-
-//********************************************************************************************
-
-void EClient::reqHistogramData(int reqId, const Contract &contract, bool useRTH, const std::string& timePeriod) {
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
-        return;
-    }
-
-    if( m_serverVersion < MIN_SERVER_VER_REQ_HISTOGRAM) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support histogram requests.");
-        return;
-    }
-
-    std::stringstream msg;
-    prepareBuffer(msg);
-
-    try {
-        ENCODE_FIELD(REQ_HISTOGRAM_DATA);
-        ENCODE_FIELD(reqId);
-        ENCODE_CONTRACT(contract);
-        ENCODE_FIELD(useRTH);
-        ENCODE_FIELD(timePeriod);          
-    }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(reqId, ex.error().code(), ex.error().msg() + ex.text());
-        return;
-    }
-
-    closeAndSend(msg.str());
-}
-
-//********************************************************************************************
-
-void EClient::cancelHistogramData(int reqId) {
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
-        return;
-    }
-
-    if( m_serverVersion < MIN_SERVER_VER_REQ_HEAD_TIMESTAMP) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support histogram requests.");
-        return;
-    }
-
-    std::stringstream msg;
-    prepareBuffer(msg);
-
-    ENCODE_FIELD(CANCEL_HISTOGRAM_DATA);
-    ENCODE_FIELD(reqId);      
-
-    closeAndSend(msg.str());
-}
-
-//********************************************************************************************
-
-void EClient::reqMarketRule(int marketRuleId) {
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
-        return;
-    }
-
-    if( m_serverVersion < MIN_SERVER_VER_MARKET_RULES) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support market rule requests.");
-        return;
-    }
-
-    std::stringstream msg;
-    prepareBuffer(msg);
-
-    ENCODE_FIELD(REQ_MARKET_RULE);
-    ENCODE_FIELD(marketRuleId);
-
-    closeAndSend(msg.str());
-}
-
-//********************************************************************************************
-
-void EClient::reqPnL(int reqId, const std::string& account, const std::string& modelCode) {
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
-        return;
-    }
-
-    if( m_serverVersion < MIN_SERVER_VER_PNL) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support PnL requests.");
-        return;
-    }
-
-    std::stringstream msg;
-    prepareBuffer(msg);
-
-    try {
-        ENCODE_FIELD(REQ_PNL);
-        ENCODE_FIELD(reqId);
-        ENCODE_FIELD(account);
-        ENCODE_FIELD(modelCode);
-    }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(reqId, ex.error().code(), ex.error().msg() + ex.text());
-        return;
-    }
-
-    closeAndSend(msg.str());
-}
-
-//********************************************************************************************
-
-void EClient::cancelPnL(int reqId) {
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
-        return;
-    }
-
-    if( m_serverVersion < MIN_SERVER_VER_PNL) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support PnL requests.");
-        return;
-    }
-
-    std::stringstream msg;
-    prepareBuffer(msg);
-
-    ENCODE_FIELD(CANCEL_PNL);
-    ENCODE_FIELD(reqId);
-
-    closeAndSend(msg.str());
-}
-
-//********************************************************************************************
-
-void EClient::reqPnLSingle(int reqId, const std::string& account, const std::string& modelCode, int conId) {
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
-        return;
-    }
-
-    if( m_serverVersion < MIN_SERVER_VER_PNL) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support PnL requests.");
-        return;
-    }
-
-    std::stringstream msg;
-    prepareBuffer(msg);
-
-    try {
-        ENCODE_FIELD(REQ_PNL_SINGLE);
-        ENCODE_FIELD(reqId);
-        ENCODE_FIELD(account);
-        ENCODE_FIELD(modelCode);
-        ENCODE_FIELD(conId);
-    }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(reqId, ex.error().code(), ex.error().msg() + ex.text());
-        return;
-    }
-
-    closeAndSend(msg.str());
-}
-
-//********************************************************************************************
-
-void EClient::cancelPnLSingle(int reqId) {
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
-        return;
-    }
-
-    if( m_serverVersion < MIN_SERVER_VER_PNL) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support PnL requests.");
-        return;
-    }
-
-    std::stringstream msg;
-    prepareBuffer(msg);
-
-    ENCODE_FIELD(CANCEL_PNL_SINGLE);
-    ENCODE_FIELD(reqId);
-
-    closeAndSend(msg.str());
-}
-
-//********************************************************************************************
-
-void EClient::reqHistoricalTicks(int reqId, const Contract &contract, const std::string& startDateTime,
-                                 const std::string& endDateTime, int numberOfTicks, const std::string& whatToShow, int useRth, bool ignoreSize, const TagValueListSPtr& miscOptions) {
-
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
-        return;
-    }
-
-    if( m_serverVersion < MIN_SERVER_VER_HISTORICAL_TICKS) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support historical ticks request request.");
-        return;
-    }
-
-    std::stringstream msg;
-    prepareBuffer(msg);
-
-    try {
-        ENCODE_FIELD(REQ_HISTORICAL_TICKS);
-        ENCODE_FIELD(reqId);
-        ENCODE_CONTRACT(contract);
-        ENCODE_FIELD(startDateTime);
-        ENCODE_FIELD(endDateTime);
-        ENCODE_FIELD(numberOfTicks);
-        ENCODE_FIELD(whatToShow);
-        ENCODE_FIELD(useRth);
-        ENCODE_FIELD(ignoreSize);
-        ENCODE_TAGVALUELIST(miscOptions);
-    }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(reqId, ex.error().code(), ex.error().msg() + ex.text());
-        return;
-    }
-
-    closeAndSend(msg.str());
-}
-
-//********************************************************************************************
-
-void EClient::reqTickByTickData(int reqId, const Contract &contract, const std::string& tickType, int numberOfTicks, bool ignoreSize) {
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
-        return;
-    }
-
-    if( m_serverVersion < MIN_SERVER_VER_TICK_BY_TICK) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support tick-by-tick data request.");
-        return;
-    }
-
-    if( m_serverVersion < MIN_SERVER_VER_TICK_BY_TICK_IGNORE_SIZE) {
-        if (numberOfTicks != 0 || ignoreSize) {
-            m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                "  It does not support ignoreSize and numberOfTicks parameters in tick-by-tick data requests.");
-            return;
-        }
-    }
-
-    std::stringstream msg;
-    prepareBuffer(msg);
-
-    try {
-        ENCODE_FIELD(REQ_TICK_BY_TICK_DATA);
-        ENCODE_FIELD(reqId);
-        ENCODE_FIELD( contract.conId);
-        ENCODE_FIELD( contract.symbol);
-        ENCODE_FIELD( contract.secType);
-        ENCODE_FIELD( contract.lastTradeDateOrContractMonth);
-        ENCODE_FIELD( contract.strike);
-        ENCODE_FIELD( contract.right);
-        ENCODE_FIELD( contract.multiplier);
-        ENCODE_FIELD( contract.exchange);
-        ENCODE_FIELD( contract.primaryExchange);
-        ENCODE_FIELD( contract.currency);
-        ENCODE_FIELD( contract.localSymbol);
-        ENCODE_FIELD( contract.tradingClass);
-        ENCODE_FIELD( tickType);
-        if( m_serverVersion >= MIN_SERVER_VER_TICK_BY_TICK_IGNORE_SIZE) {
-            ENCODE_FIELD( numberOfTicks);
-            ENCODE_FIELD( ignoreSize);
-        }
-    }
-    catch (EClientException& ex) {
-        m_pEWrapper->error(reqId, ex.error().code(), ex.error().msg() + ex.text());
-        return;
-    }
-
-    closeAndSend(msg.str());
+    closeAndSend( msg.str() );
     
 }
 
 //********************************************************************************************
 
-void EClient::cancelTickByTickData(int reqId) {
-    if( !isConnected()) {
-        m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+void EClient::reqHistoricalNews(            int                 requestId, 
+                                            int                 conId, 
+                                      const std::string&        providerCodes, 
+                                      const std::string&        startDateTime, 
+                                      const std::string&        endDateTime, 
+                                            int                 totalResults,
+                                      const TagValueListSPtr&   historicalNewsOptions       )
+{
+
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
         return;
+    
     }
 
-    if( m_serverVersion < MIN_SERVER_VER_TICK_BY_TICK) {
-        m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-            "  It does not support tick-by-tick data cancel.");
+    if( m_serverVersion < MIN_SERVER_VER_REQ_HISTORICAL_NEWS ) 
+    {
+    
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support historical news requests.");
+        
         return;
+    
+    }
+
+    std::stringstream msg;
+
+    prepareBuffer( msg );
+
+    try 
+    {
+
+        ENCODE_FIELD(           REQ_HISTORICAL_NEWS             );
+        ENCODE_FIELD(           requestId                       );
+        ENCODE_FIELD(           conId                           );
+        ENCODE_FIELD(           providerCodes                   );
+        ENCODE_FIELD(           startDateTime                   );
+        ENCODE_FIELD(           endDateTime                     );
+        ENCODE_FIELD(           totalResults                    );
+
+        // send historicalNewsOptions parameter
+        if( m_serverVersion >= MIN_SERVER_VER_NEWS_QUERY_ORIGINS ) 
+        {
+            ENCODE_TAGVALUELIST(        historicalNewsOptions       );
+        }
+
+    }
+    catch ( EClientException&  ex ) 
+    {
+        
+        m_pEWrapper->error(             requestId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
+        return;
+    
+    }
+
+    closeAndSend( msg.str() ); 
+
+}
+
+//********************************************************************************************
+
+void EClient::reqHeadTimestamp(             int             tickerId, 
+                                      const Contract&       contract, 
+                                      const std::string&    whatToShow, 
+                                            int             useRTH, 
+                                            int             formatDate          )
+{
+
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
+        return;
+    
+    }
+
+    if( m_serverVersion < MIN_SERVER_VER_REQ_HEAD_TIMESTAMP ) 
+    {
+    
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support head timestamp requests.");
+    
+        return;
+    
+    }
+
+    std::stringstream msg;
+
+    prepareBuffer( msg );
+
+    try 
+    {
+
+        ENCODE_FIELD(           REQ_HEAD_TIMESTAMP                          );
+        ENCODE_FIELD(           tickerId                                    );
+        ENCODE_FIELD(           contract.conId                              );
+        ENCODE_FIELD(           contract.symbol                             );
+        ENCODE_FIELD(           contract.secType                            );
+        ENCODE_FIELD(           contract.lastTradeDateOrContractMonth       );
+        ENCODE_FIELD(           contract.strike                             );
+        ENCODE_FIELD(           contract.right                              );
+        ENCODE_FIELD(           contract.multiplier                         );
+        ENCODE_FIELD(           contract.exchange                           );
+        ENCODE_FIELD(           contract.primaryExchange                    );
+        ENCODE_FIELD(           contract.currency                           );
+        ENCODE_FIELD(           contract.localSymbol                        );
+        ENCODE_FIELD(           contract.tradingClass                       );
+        ENCODE_FIELD(           contract.includeExpired                     );
+        ENCODE_FIELD(           useRTH                                      );
+        ENCODE_FIELD(           whatToShow                                  );          
+        ENCODE_FIELD(           formatDate                                  );
+
+    }
+    catch (  EClientException&  ex  ) 
+    {
+
+        m_pEWrapper->error(             tickerId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
+        return;
+    
+    }
+
+    closeAndSend( msg.str() );
+
+}
+
+//********************************************************************************************
+
+void EClient::cancelHeadTimestamp(  int  tickerId  ) 
+{
+
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
+        return;
+    
+    }
+
+    if( m_serverVersion < MIN_SERVER_VER_CANCEL_HEADTIMESTAMP ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support head timestamp requests canceling.");
+        
+        return;
+    
+    }
+
+    std::stringstream msg;
+    
+    prepareBuffer( msg );
+
+    ENCODE_FIELD(           CANCEL_HEAD_TIMESTAMP               );
+    ENCODE_FIELD(           tickerId                            );
+
+    closeAndSend( msg.str() );
+
+}
+
+//********************************************************************************************
+
+void EClient::reqHistogramData(             int             reqId, 
+                                      const Contract&       contract, 
+                                            bool            useRTH, 
+                                      const std::string&    timePeriod      ) 
+{
+
+    if( !isConnected() ) 
+    {
+     
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+     
+        return;
+    
+    }
+
+    if( m_serverVersion < MIN_SERVER_VER_REQ_HISTOGRAM ) 
+    {
+    
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support histogram requests.");
+        
+        return;
+
+    }
+
+    std::stringstream msg;
+
+    prepareBuffer( msg );
+
+    try 
+    {
+
+        ENCODE_FIELD(               REQ_HISTOGRAM_DATA              );
+        ENCODE_FIELD(               reqId                           );
+
+        ENCODE_CONTRACT(            contract                        );
+        
+        ENCODE_FIELD(               useRTH                          );
+        ENCODE_FIELD(               timePeriod                      );          
+    
+    }
+    catch ( EClientException&  ex ) 
+    {
+
+        m_pEWrapper->error(             reqId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
+        return;
+    
+    }
+
+    closeAndSend( msg.str() );
+
+}
+
+//********************************************************************************************
+
+void EClient::cancelHistogramData(  int  reqId  ) 
+{
+
+    if( !isConnected() ) 
+    {
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+
+        return;
+
+    }
+
+    if( m_serverVersion < MIN_SERVER_VER_REQ_HEAD_TIMESTAMP ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support histogram requests.");
+    
+        return;
+    
+    }
+
+    std::stringstream msg;
+
+    prepareBuffer( msg );
+
+    ENCODE_FIELD(           CANCEL_HISTOGRAM_DATA           );
+    ENCODE_FIELD(           reqId                           );      
+
+    closeAndSend( msg.str() );
+
+}
+
+//********************************************************************************************
+
+void EClient::reqMarketRule(  int  marketRuleId  ) 
+{
+
+    if( !isConnected() ) 
+    {
+    
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+    
+        return;
+    
+    }
+
+    if( m_serverVersion < MIN_SERVER_VER_MARKET_RULES ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support market rule requests.");
+        
+        return;
+    
+    }
+
+    std::stringstream msg;
+    
+    prepareBuffer( msg );
+
+    ENCODE_FIELD(           REQ_MARKET_RULE             );
+    ENCODE_FIELD(           marketRuleId                );
+
+    closeAndSend( msg.str() );
+
+}
+
+//********************************************************************************************
+
+void EClient::reqPnL(           int             reqId, 
+                          const std::string&    account, 
+                          const std::string&    modelCode       ) 
+{
+
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
+        return;
+    
+    }
+
+    if( m_serverVersion < MIN_SERVER_VER_PNL ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support PnL requests.");
+        
+        return;
+
+    }
+
+    std::stringstream msg;
+
+    prepareBuffer( msg );
+
+    try 
+    {
+    
+        ENCODE_FIELD(           REQ_PNL             );
+        ENCODE_FIELD(           reqId               );
+        ENCODE_FIELD(           account             );
+        ENCODE_FIELD(           modelCode           );
+    
+    }
+    catch ( EClientException&  ex ) 
+    {
+
+        m_pEWrapper->error(             reqId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
+        return;
+    
+    }
+
+    closeAndSend( msg.str() );
+
+}
+
+//********************************************************************************************
+
+void EClient::cancelPnL(  int  reqId  ) 
+{
+
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
+        return;
+    
+    }
+
+    if( m_serverVersion < MIN_SERVER_VER_PNL ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support PnL requests.");
+        
+        return;
+    
+    }
+
+    std::stringstream msg;
+
+    prepareBuffer( msg );
+
+    ENCODE_FIELD(           CANCEL_PNL          );
+    ENCODE_FIELD(           reqId               );
+
+    closeAndSend( msg.str() );
+
+}
+
+//********************************************************************************************
+
+void EClient::reqPnLSingle(             int             reqId, 
+                                  const std::string&    account, 
+                                  const std::string&    modelCode, 
+                                        int             conId               ) 
+{
+
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()                 );
+        
+        return;
+    
+    }
+
+    if( m_serverVersion < MIN_SERVER_VER_PNL ) 
+    {
+    
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support PnL requests.");
+        
+        return;
+
+    }
+
+    std::stringstream msg;
+     
+    prepareBuffer( msg );
+
+    try 
+    {
+
+        ENCODE_FIELD(           REQ_PNL_SINGLE          );
+        ENCODE_FIELD(           reqId                   );
+        ENCODE_FIELD(           account                 );
+        ENCODE_FIELD(           modelCode               );
+        ENCODE_FIELD(           conId                   );
+    
+    }
+    catch ( EClientException&  ex ) 
+    {
+
+        m_pEWrapper->error(             reqId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
+        return;
+    
+    }
+
+    closeAndSend( msg.str() );
+
+}
+
+//********************************************************************************************
+
+void EClient::cancelPnLSingle(  int  reqId  ) 
+{
+
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
+        return;
+    
+    }
+
+    if( m_serverVersion < MIN_SERVER_VER_PNL ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support PnL requests.");
+        
+        return;
+    
+    }
+
+    std::stringstream msg;
+    
+    prepareBuffer( msg );
+
+    ENCODE_FIELD(           CANCEL_PNL_SINGLE           );
+    ENCODE_FIELD(           reqId                       );
+
+    closeAndSend( msg.str() );
+
+}
+
+//********************************************************************************************
+
+void EClient::reqHistoricalTicks(           int                 reqId, 
+                                      const Contract&           contract, 
+                                      const std::string&        startDateTime,
+                                      const std::string&        endDateTime, 
+                                            int                 numberOfTicks, 
+                                      const std::string&        whatToShow, 
+                                            int                 useRth, 
+                                            bool                ignoreSize, 
+                                      const TagValueListSPtr&   miscOptions         ) 
+{
+
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
+        return;
+    
+    }
+
+    if( m_serverVersion < MIN_SERVER_VER_HISTORICAL_TICKS ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support historical ticks request request.");
+        
+        return;
+
     }
 
     std::stringstream msg;
     prepareBuffer(msg);
 
-    ENCODE_FIELD(CANCEL_TICK_BY_TICK_DATA);
-    ENCODE_FIELD(reqId);
+    try 
+    {
 
-    closeAndSend(msg.str());    
+        ENCODE_FIELD(               REQ_HISTORICAL_TICKS                );
+        ENCODE_FIELD(               reqId                               );
+        ENCODE_CONTRACT(            contract                            );
+        ENCODE_FIELD(               startDateTime                       );
+        ENCODE_FIELD(               endDateTime                         );
+        ENCODE_FIELD(               numberOfTicks                       );
+        ENCODE_FIELD(               whatToShow                          );
+        ENCODE_FIELD(               useRth                              );
+        ENCODE_FIELD(               ignoreSize                          );
+        ENCODE_TAGVALUELIST(        miscOptions                         );
+    
+    }
+    catch ( EClientException&  ex ) 
+    {
+    
+        m_pEWrapper->error(             reqId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
+        return;
+    
+    }
+
+    closeAndSend( msg.str() );
+
+}
+
+//********************************************************************************************
+
+void EClient::reqTickByTickData(            int             reqId, 
+                                      const Contract&       contract, 
+                                      const std::string&    tickType, 
+                                            int             numberOfTicks, 
+                                            bool            ignoreSize              ) 
+{
+
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+    
+        return;
+    
+    }
+
+    if( m_serverVersion < MIN_SERVER_VER_TICK_BY_TICK ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support tick-by-tick data request.");
+
+        return;
+
+    }
+
+    if( m_serverVersion < MIN_SERVER_VER_TICK_BY_TICK_IGNORE_SIZE ) 
+    {
+
+        if ( numberOfTicks != 0 || ignoreSize ) 
+        {
+
+            m_pEWrapper->error(             NO_VALID_ID, 
+                                            UPDATE_TWS.code(), 
+                                            UPDATE_TWS.msg() + "  It does not support ignoreSize and numberOfTicks parameters in tick-by-tick data requests.");
+        
+            return;
+
+        }
+
+    }
+
+    std::stringstream msg;
+
+    prepareBuffer( msg );
+
+    try 
+    {
+
+        ENCODE_FIELD(           REQ_TICK_BY_TICK_DATA                       );
+        ENCODE_FIELD(           reqId                                       );
+        ENCODE_FIELD(           contract.conId                              );
+        ENCODE_FIELD(           contract.symbol                             );
+        ENCODE_FIELD(           contract.secType                            );
+        ENCODE_FIELD(           contract.lastTradeDateOrContractMonth       );
+        ENCODE_FIELD(           contract.strike                             );
+        ENCODE_FIELD(           contract.right                              );
+        ENCODE_FIELD(           contract.multiplier                         );
+        ENCODE_FIELD(           contract.exchange                           );
+        ENCODE_FIELD(           contract.primaryExchange                    );
+        ENCODE_FIELD(           contract.currency                           );
+        ENCODE_FIELD(           contract.localSymbol                        );
+        ENCODE_FIELD(           contract.tradingClass                       );
+        ENCODE_FIELD(           tickType                                    );
+        
+        if( m_serverVersion >= MIN_SERVER_VER_TICK_BY_TICK_IGNORE_SIZE ) 
+        {
+            ENCODE_FIELD(           numberOfTicks           );
+            ENCODE_FIELD(           ignoreSize              );
+        }
+
+    }
+    catch ( EClientException&  ex ) 
+    {
+
+        m_pEWrapper->error(             reqId, 
+                                        ex.error().code(), 
+                                        ex.error().msg() + ex.text()            );
+        
+        return;
+    
+    }
+
+    closeAndSend( msg.str() );
+    
+}
+
+//********************************************************************************************
+
+void EClient::cancelTickByTickData( int  reqId ) 
+{
+
+    if( !isConnected() ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        NOT_CONNECTED.code(), 
+                                        NOT_CONNECTED.msg()             );
+        
+        return;
+    
+    }
+
+    if( m_serverVersion < MIN_SERVER_VER_TICK_BY_TICK ) 
+    {
+
+        m_pEWrapper->error(             NO_VALID_ID, 
+                                        UPDATE_TWS.code(), 
+                                        UPDATE_TWS.msg() + "  It does not support tick-by-tick data cancel.");
+    
+        return;
+    
+    }
+
+    std::stringstream msg;
+    
+    prepareBuffer( msg );
+
+    ENCODE_FIELD(           CANCEL_TICK_BY_TICK_DATA            );
+    ENCODE_FIELD(           reqId                               );
+
+    closeAndSend( msg.str() );
+
 }
 
 //********************************************************************************************
