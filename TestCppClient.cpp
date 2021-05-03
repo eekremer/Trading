@@ -156,9 +156,12 @@ void TestCppClient::processMessages()
 
 	time_t now = time( NULL );
 
+
 	/*****************************************************************/
     /* Below are few quick-to-test examples on the IB API functions grouped by functionality. Uncomment the relevant methods. */
     /*****************************************************************/
+
+
 
 	switch ( m_state ) 
 	{
@@ -513,7 +516,21 @@ void TestCppClient::processMessages()
 
 }
 
-//**********************************************************************************************************************
+//********************************************************************************************
+
+State TestCppClient::getState()
+{
+	return m_state;
+} 
+
+//********************************************************************************************
+
+void TestCppClient::setState(	State state	 ) 
+{
+	m_state = state;
+}
+
+//********************************************************************************************
 
 // methods
 //! [connectack]
@@ -526,7 +543,7 @@ void TestCppClient::connectAck()
 }
 //! [connectack]
 
-//**********************************************************************************************************************
+//*********************************************************************************************
 
 void TestCppClient::reqCurrentTime()
 { 
@@ -1016,6 +1033,37 @@ void TestCppClient::contractOperations()
 {
 
 
+
+	//************************************************************
+	// test
+	
+	Contract contract1 = Contract();
+	Contract contract2 = Contract();
+
+	contract1.symbol  			= "AAPL";
+	contract1.secType 			= "STK";
+	contract1.exchange 			= "SMART";
+	contract1.currency 			= "USD";
+	contract1.primaryExchange 	= "NASDAQ";
+
+	m_pClient->reqContractDetails(			1, 
+											contract1			);
+
+	contract2.symbol  			= "TSLA";
+	contract2.secType 			= "STK";
+	contract2.exchange 			= "SMART";
+	contract2.currency 			= "USD";
+	contract2.primaryExchange 	= "NASDAQ";
+
+	m_pClient->reqContractDetails(			1, 
+											contract2			);
+
+
+
+	//************************************************************
+
+/*
+
 	m_pClient->reqContractDetails(					209, 
 													ContractSamples::EurGbpFx()							);
 	
@@ -1045,6 +1093,7 @@ void TestCppClient::contractOperations()
 	m_pClient->reqContractDetails(					211, 
 													ContractSamples::NewsFeedForQuery()					);
 	//! [reqcontractdetailsnews]
+*/
 
 	m_state = ST_CONTRACTOPERATION_ACK;
 
@@ -1921,12 +1970,14 @@ void TestCppClient::reqMatchingSymbols()
 
 void TestCppClient::reqMktDepthExchanges()
 {
+
 	/*** Request TWS' market depth exchanges ***/
 	//! [reqMktDepthExchanges]
 	m_pClient->reqMktDepthExchanges();
 	//! [reqMktDepthExchanges]
 
 	m_state = ST_REQMKTDEPTHEXCHANGES_ACK;
+
 }
 
 //**********************************************************************************************************************
@@ -2422,7 +2473,7 @@ void TestCppClient::nextValidId(  OrderId   orderId  )
 void TestCppClient::currentTime( long time )
 {
 
-	if ( m_state == ST_PING_ACK) 
+	if ( m_state == ST_PING_ACK ) 
 	{
 
 		time_t t = ( time_t)time;
