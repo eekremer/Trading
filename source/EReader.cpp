@@ -500,6 +500,7 @@ EMessage*  EReader::readSingleMsg()
 
 		int msgSize;
 
+
 		if ( !bufferedRead( 	(char*)&msgSize, 	sizeof( msgSize ) 	) )
 			return 0;
 
@@ -510,7 +511,7 @@ EMessage*  EReader::readSingleMsg()
 
 		std::vector< char > buf = std::vector< char >( msgSize );
 
-		if ( !bufferedRead( buf.data(), buf.size() ) )
+		if ( !bufferedRead( 	buf.data(), 	buf.size() 		) 	)
 			return 0;
 
 		return new EMessage( buf );
