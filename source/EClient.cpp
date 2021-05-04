@@ -441,6 +441,7 @@ void EClient::reqMktData(               TickerId                tickerId,
 
         if( !contract.tradingClass.empty() ) 
         {
+
             m_pEWrapper->error(             tickerId, 
                                             UPDATE_TWS.code(), 
                                             UPDATE_TWS.msg() +
@@ -590,7 +591,7 @@ void EClient::cancelMktData(  TickerId   tickerId  )
 {
 
     // not connected?
-    if( !isConnected()) 
+    if( !isConnected() ) 
     {
 
         m_pEWrapper->error(             tickerId, 
@@ -3086,18 +3087,27 @@ void EClient::cancelOrder(  OrderId  id  )
     
     }
 
+
     const int VERSION = 1;
 
-    // send cancel order msg
     std::stringstream msg;
 
     prepareBuffer( msg );
+
 
     ENCODE_FIELD(           CANCEL_ORDER            );
     ENCODE_FIELD(           VERSION                 );
     ENCODE_FIELD(           id                      );
 
+
+    //************************
+    //************************
+
     closeAndSend( msg.str() );
+
+    //************************
+    //************************
+
 
 }
 
@@ -3168,6 +3178,7 @@ void EClient::reqOpenOrders()
         return;
  
     }
+
 
     std::stringstream msg;
 

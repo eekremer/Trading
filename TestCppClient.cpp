@@ -607,32 +607,35 @@ void TestCppClient::pnlSingleOperation()
 void TestCppClient::tickDataOperation()
 {
 
+
+	m_pClient->reqMarketDataType( 4 );
+
 	/*** Requesting real time market data ***/
     std::this_thread::sleep_for( 		std::chrono::seconds( 1 ) 								);
     
 
 	//! [reqmktdata]
-	m_pClient->reqMktData(				1001, 
+/* 	m_pClient->reqMktData(				1001, 
 										ContractSamples::StockComboContract(), 
 										"", 
 										false, 
 										false, 
-										TagValueListSPtr()										);
+										TagValueListSPtr()	 									);	 */
 	
-	m_pClient->reqMktData(				1002, 
+/* 	m_pClient->reqMktData(				1002, 
 										ContractSamples::OptionWithLocalSymbol(), 
 										"", 
 										false, 
 										false, 
-										TagValueListSPtr()										);
+										TagValueListSPtr()										); 	 */
 	//! [reqmktdata]
 	//! [reqmktdata_snapshot]
-	m_pClient->reqMktData(				1003, 
+/* 	m_pClient->reqMktData(				1003, 
 										ContractSamples::FutureComboContract(), 
 										"", 
 										true, 
 										false, 
-										TagValueListSPtr()										);
+										TagValueListSPtr()										);   */
 	//! [reqmktdata_snapshot]
 
 	/*
@@ -641,7 +644,9 @@ void TestCppClient::tickDataOperation()
 	m_pClient->reqMktData(1013, ContractSamples::USStock(), "", false, true, TagValueListSPtr());
 	//! [regulatorysnapshot]
 	*/
-	
+
+
+
 	//! [reqmktdata_genticks]
 	//Requesting RTVolume (Time & Sales) and shortable generic ticks
 	m_pClient->reqMktData(				1004, 
@@ -655,86 +660,86 @@ void TestCppClient::tickDataOperation()
 	//! [reqmktdata_contractnews]
 	// Without the API news subscription this will generate an "invalid tick type" error
 
-	m_pClient->reqMktData(				1005, 	
+/* 	m_pClient->reqMktData(				1005, 	
 										ContractSamples::USStock(), 	
 										"mdoff,292:BZ", // Benzinga Pro	news services)
 										false, 	
 										false, 
-										TagValueListSPtr()										);
+										TagValueListSPtr()	 				);			*/									
 	
-	m_pClient->reqMktData(				1006, 	
+/* 	m_pClient->reqMktData(				1006, 	
 										ContractSamples::USStock(), 	
 										"mdoff,292:BT", 	
 										false, 	
 										false, 
-										TagValueListSPtr()										);
+										TagValueListSPtr() 					);			*/										
 	
-	m_pClient->reqMktData(				1007, 	
+/* 	m_pClient->reqMktData(				1007, 	
 										ContractSamples::USStock(), 	
 										"mdoff,292:FLY",  // Fly on the Wall  	
 										false, 	
 										false, 
-										TagValueListSPtr()										);
+										TagValueListSPtr() 					);			*/										
 	
-	m_pClient->reqMktData(				1008, 	
+/* 	m_pClient->reqMktData(				1008, 	
 										ContractSamples::USStock(), 	
 										"mdoff,292:MT", 	
 										false, 	
 										false, 
-										TagValueListSPtr()										);
+										TagValueListSPtr() 					);			*/							
 	//! [reqmktdata_contractnews]
 	
 	//! [reqmktdata_broadtapenews]
-	m_pClient->reqMktData(				1009,   
+/* 	m_pClient->reqMktData(				1009,   
 										ContractSamples::BTbroadtapeNewsFeed(), 	
 										"mdoff,292", 
 										false, 
 										false, 
-										TagValueListSPtr()										);
+										TagValueListSPtr()					); 			*/
 	
-	m_pClient->reqMktData(				1010,  	
+/* 	m_pClient->reqMktData(				1010,  	
 										ContractSamples::BZbroadtapeNewsFeed(), 	
 										"mdoff,292", 
 										false, 
 										false, 
-										TagValueListSPtr()										);
+										TagValueListSPtr()					); 			*/
 	
-	m_pClient->reqMktData(				1011, 	
+/* 	m_pClient->reqMktData(				1011, 	
 										ContractSamples::FLYbroadtapeNewsFeed(), 	
 										"mdoff,292", 
 										false, 
 										false, 
-										TagValueListSPtr()										);
+										TagValueListSPtr()					); 			*/
 	//! [reqmktdata_broadtapenews]
 
 	//! [reqoptiondatagenticks]
 	//Requesting data for an option contract will return the greek values
-	m_pClient->reqMktData(				1013, 	
+/* 	m_pClient->reqMktData(				1013, 	
 										ContractSamples::USOptionContract(), 
 										"", 
 										false, 
 										false, 
-										TagValueListSPtr()										);
+										TagValueListSPtr()							ma); */
 	//! [reqoptiondatagenticks]
 	
 	//! [reqfuturesopeninterest]
 	//Requesting data for a futures contract will return the futures open interest
-	m_pClient->reqMktData(				1014, 	
+/* 	m_pClient->reqMktData(				1014, 	
 										ContractSamples::SimpleFuture(), 
 										"mdoff,588", 
 										false, 
 										false, 
-										TagValueListSPtr()										);
+										TagValueListSPtr()							); */
 	//! [reqfuturesopeninterest]
 
 	//! [reqpreopenbidask]
 	//Requesting data for a futures contract will return the pre-open bid/ask flag
-	m_pClient->reqMktData(				1015, 	
+/* 	m_pClient->reqMktData(				1015, 	
 										ContractSamples::SimpleFuture(), 
 										"", 
 										false, 
 										false, 
-										TagValueListSPtr()										);
+										TagValueListSPtr()										); */
 	//! [reqpreopenbidask]
 
 	//! [reqavgoptvolume]
@@ -749,12 +754,12 @@ void TestCppClient::tickDataOperation()
 
 	//! [reqetfticks]
 	//Requesting data for an ETF will return the ETF ticks
-	m_pClient->reqMktData(				1017, 	
+/* 	m_pClient->reqMktData(				1017, 	
 										ContractSamples::etf(), 
 										"mdoff, 576,577,578,614,623", 
 										false, 
 										false, 
-										TagValueListSPtr()										);
+										TagValueListSPtr()										); */
 	//! [reqetfticks]
 
 	std::this_thread::sleep_for(		std::chrono::seconds( 1 )								);
@@ -763,14 +768,15 @@ void TestCppClient::tickDataOperation()
 	/*** Canceling the market data subscription ***/
 
 	//! [cancelmktdata]
-	m_pClient->cancelMktData(	1001	);
+/* 	m_pClient->cancelMktData(	1001	);
 	m_pClient->cancelMktData(	1002	);
 	m_pClient->cancelMktData(	1003	);
 	m_pClient->cancelMktData(	1014	);
 	m_pClient->cancelMktData(	1015	);
 	m_pClient->cancelMktData(	1016	);
-	m_pClient->cancelMktData(	1017	);
+	m_pClient->cancelMktData(	1017	); */
 	//! [cancelmktdata]
+
 
 	m_state = ST_TICKDATAOPERATION_ACK;
 
@@ -2515,12 +2521,12 @@ void TestCppClient::error(					int 					id,
 void TestCppClient::tickPrice( 				TickerId 			tickerId, 
 											TickType 			field, 
 											double 				price, 
-											const TickAttrib& 	attribs						) 
+									  const TickAttrib& 		attribs						) 
 {
 
 	printf( 								"Tick Price. Ticker Id: %ld, Field: %d, Price: %g, CanAutoExecute: %d, PastLimit: %d, PreOpen: %d\n", 
 											tickerId, 
-											(int)field, 
+									   (int)field, 
 											price, 
 											attribs.canAutoExecute, 
 											attribs.pastLimit, 

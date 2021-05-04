@@ -211,6 +211,7 @@ Contract ContractSamples::OptionAtIse()
 
 Contract ContractSamples:: USStock()
 {
+
 	//! [stkcontract]
 	Contract contract;
 
@@ -223,6 +224,7 @@ Contract ContractSamples:: USStock()
 
 	//! [stkcontract]
 	return contract;
+
 }
 
 //******************************************************************************************
@@ -248,10 +250,11 @@ Contract ContractSamples::USStockAtSmart()
 
 	Contract contract;
 
-	contract.symbol 	=   "IBM";
-	contract.secType 	=   "STK";
-	contract.currency 	=   "USD";
-	contract.exchange 	=   "SMART";
+	contract.symbol 		 =  "TSLA";
+	contract.secType 		 =  "STK";
+	contract.currency 		 =  "USD";
+	contract.exchange 		 =  "SMART";
+	contract.primaryExchange =  "ISLAND";
 
 	return contract;
 }
@@ -358,18 +361,20 @@ Contract ContractSamples::Commodity()
 
 Contract ContractSamples::USOptionContract()
 {
+
 	Contract contract;
 
-	contract.symbol 						= "GOOG";
-	contract.secType 						= "OPT";
-	contract.exchange 						= "SMART";
-	contract.currency 						= "USD";
-	contract.lastTradeDateOrContractMonth 	= "20170120";
-	contract.strike 						= 615;
-	contract.right 							= "C";
-	contract.multiplier 					= "100";
+	contract.symbol 						= 	"GOOG";
+	contract.secType 						= 	"OPT";
+	contract.exchange 						= 	"SMART";
+	contract.currency 						= 	"USD";
+	contract.lastTradeDateOrContractMonth 	= 	"20170120";
+	contract.strike 						= 	615;
+	contract.right 							= 	"C";
+	contract.multiplier 					= 	"100";
 
 	return contract;
+
 }
 
 //******************************************************************************************
@@ -460,6 +465,7 @@ Contract ContractSamples::OptionWithLocalSymbol()
 
 	//! [optcontract_localsymbol]
 	return contract;
+
 }
 
 /*
@@ -489,6 +495,7 @@ Contract ContractSamples::DutchWarrant()
      */
 Contract ContractSamples::SimpleFuture()
 {
+
 	//! [futcontract]
 	Contract contract;
 
@@ -500,6 +507,7 @@ Contract ContractSamples::SimpleFuture()
 
 	//! [futcontract]
 	return contract;
+
 }
 
 //******************************************************************************************

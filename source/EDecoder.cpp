@@ -82,14 +82,14 @@ const char* EDecoder::processTickPriceMsg(			const char* 	ptr,
 
 	}
 
-	//*****************************************************************************
+	//********************************************************************
 
-	m_pEWrapper->tickPrice( 				tickerId, 
-											(TickType)tickTypeInt, 
-											price, 
-											attrib								);
+	m_pEWrapper->tickPrice( 			tickerId, 
+										(TickType)tickTypeInt, 
+										price, 
+										attrib							);
 
-	//*****************************************************************************										
+	//********************************************************************										
 
 	// process ver 2 fields
 	{
@@ -131,6 +131,8 @@ const char* EDecoder::processTickPriceMsg(			const char* 	ptr,
 		}
 
 		//************************************************************************
+		// callback
+		//************************************************************************
 
 		if( sizeTickType != NOT_SET )
 			m_pEWrapper->tickSize( 					tickerId, 
@@ -161,7 +163,8 @@ const char* EDecoder::processTickSizeMsg(			const char* 	ptr,
 	DECODE_FIELD( tickTypeInt	);
 	DECODE_FIELD( size			);
 
-
+	//****************************************************************************
+	// callback
 	//****************************************************************************
 
 	m_pEWrapper->tickSize( 				tickerId, 
@@ -278,6 +281,9 @@ const char* EDecoder::processTickOptionComputationMsg( 				const char* 	ptr,
 
 	}
 
+
+	//************************************************************************************
+	// callback
 	//************************************************************************************
 	
 	m_pEWrapper->tickOptionComputation( 				tickerId, 
@@ -314,14 +320,15 @@ const char* EDecoder::processTickGenericMsg(				const char* 	ptr,
 	DECODE_FIELD( 	tickTypeInt		);
 	DECODE_FIELD( 	value			);
 
-
-	//********************************************************************************
+	//************************************************************************
+	// callback
+	//************************************************************************
 
 	m_pEWrapper->tickGeneric( 				tickerId, 
 											(TickType)tickTypeInt, 
-											value									);
+											value							);
 
-	//********************************************************************************
+	//************************************************************************
 
 	return ptr;
 
@@ -343,13 +350,15 @@ const char* EDecoder::processTickStringMsg(				const char* 	ptr,
 	DECODE_FIELD( 	tickTypeInt	);
 	DECODE_FIELD( 	value 		);
 
-	//********************************************************************************
+	//****************************************************************************
+	// callback
+	//****************************************************************************
 
 	m_pEWrapper->tickString( 				tickerId, 
 											(TickType)tickTypeInt, 
-											value									);
+											value								);
 
-	//********************************************************************************
+	//****************************************************************************
 
 	return ptr;
 
@@ -372,18 +381,20 @@ const char* EDecoder::processTickEfpMsg(			const char* 	ptr,
 	double 			dividendImpact;
 	double 			dividendsToLastTradeDate;
 
-	DECODE_FIELD( 	version						);
-	DECODE_FIELD( 	tickerId					);
-	DECODE_FIELD( 	tickTypeInt					);
-	DECODE_FIELD( 	basisPoints					);
-	DECODE_FIELD( 	formattedBasisPoints		);
-	DECODE_FIELD( 	impliedFuturesPrice			);
-	DECODE_FIELD( 	holdDays					);
-	DECODE_FIELD( 	futureLastTradeDate			);
-	DECODE_FIELD( 	dividendImpact				);
-	DECODE_FIELD( 	dividendsToLastTradeDate	);
+	DECODE_FIELD( 			version							);
+	DECODE_FIELD( 			tickerId						);
+	DECODE_FIELD( 			tickTypeInt						);
+	DECODE_FIELD( 			basisPoints						);
+	DECODE_FIELD( 			formattedBasisPoints			);
+	DECODE_FIELD( 			impliedFuturesPrice				);
+	DECODE_FIELD( 			holdDays						);
+	DECODE_FIELD( 			futureLastTradeDate				);
+	DECODE_FIELD( 			dividendImpact					);
+	DECODE_FIELD( 			dividendsToLastTradeDate		);
 
 
+	//****************************************************************************
+	// callback
 	//****************************************************************************	
 
 	m_pEWrapper->tickEFP( 				tickerId, 
@@ -483,6 +494,8 @@ const char* EDecoder::processOrderStatusMsg(			const char* 	ptr,
 
 
 	//************************************************************************
+	// callback
+	//************************************************************************
 
 	m_pEWrapper->orderStatus( 				orderId, 
 											status, 
@@ -520,6 +533,8 @@ const char* EDecoder::processErrMsgMsg(				const char* 	ptr,
 	DECODE_FIELD( 		errorCode			);
 	DECODE_FIELD( 		errorMsg			);
 
+	//************************************************************
+	// callback
 	//************************************************************
 
 	m_pEWrapper->error( 			id, 
@@ -643,14 +658,16 @@ const char* EDecoder::processOpenOrderMsg(			const char* 	ptr,
         
 		}
 
-	//********************************************************************************	
+	//*******************************************************************
+	// callback
+	//*******************************************************************	
 
-	m_pEWrapper->openOrder(					(OrderId)order.orderId, 
+	m_pEWrapper->openOrder(		   (OrderId)order.orderId, 
 											contract, 
 											order, 
-											orderState								);
+											orderState					);
 
-	//********************************************************************************
+	//*******************************************************************
 
 	return ptr;
 
@@ -675,6 +692,8 @@ const char* EDecoder::processAcctValueMsg(				const char* 	ptr,
 	DECODE_FIELD( 	accountName		); // ver 2 field
 
 
+	//************************************************************************
+	// callback
 	//************************************************************************
 
 	m_pEWrapper->updateAccountValue( 				key, 
@@ -758,6 +777,8 @@ const char* EDecoder::processPortfolioValueMsg(				const char* 	ptr,
 	}
 
 	//****************************************************************************
+	// callback
+	//****************************************************************************
 
 	m_pEWrapper->updatePortfolio( 				contract,
 												position, 
@@ -787,6 +808,8 @@ const char* EDecoder::processAcctUpdateTimeMsg(			const char* 	ptr,
 	DECODE_FIELD( 		accountTime			);
 
 	//****************************************************
+	// callback
+	//****************************************************
 
 	m_pEWrapper->updateAccountTime( 	accountTime		);
 
@@ -808,6 +831,8 @@ const char* EDecoder::processNextValidIdMsg(			const char* 	ptr,
 	DECODE_FIELD( 		version			);
 	DECODE_FIELD( 		orderId			);
 
+	//**********************************
+	// callback
 	//**********************************
 
 	m_pEWrapper->nextValidId( orderId );
@@ -954,6 +979,8 @@ const char* EDecoder::processContractDataMsg(			const char* 		ptr,
 	}
 
 	//********************************************************************
+	// callback
+	//********************************************************************
 
 	m_pEWrapper->contractDetails( 				reqId, 
 												contract				);
@@ -1076,6 +1103,8 @@ const char* EDecoder::processBondContractDataMsg(			const char* 	ptr,
 	}
 
 	//********************************************************************
+	// callback
+	//********************************************************************	
 
 	m_pEWrapper->bondContractDetails( 			reqId, 
 												contract				);
@@ -1190,6 +1219,8 @@ const char* EDecoder::processExecutionDetailsMsg(			const char* 	ptr,
     }
 
 	//****************************************************************
+	// callback invoked when an order has been executed
+	//****************************************************************
 
 	m_pEWrapper->execDetails( 				reqId, 
 											contract, 
@@ -1224,7 +1255,8 @@ const char* EDecoder::processMarketDepthMsg(			const char* 	ptr,
 	DECODE_FIELD( 		price			);
 	DECODE_FIELD( 		size			);
 
-
+	//************************************************************************
+	// callback
 	//************************************************************************
 
 	m_pEWrapper->updateMktDepth( 				id, 
@@ -1272,6 +1304,8 @@ const char* EDecoder::processMarketDepthL2Msg(				const char* 	ptr,
 	}
 
 	//************************************************************************
+	// callback
+	//************************************************************************
 
 	m_pEWrapper->updateMktDepthL2( 				id, 
 												position, 
@@ -1307,6 +1341,8 @@ const char* EDecoder::processNewsBulletinsMsg(			const char* 	ptr,
 	DECODE_FIELD( 		originatingExch			);
 
 	//************************************************************************
+	// callback
+	//************************************************************************
 
 	m_pEWrapper->updateNewsBulletin( 			msgId, 
 												msgType, 
@@ -1332,6 +1368,8 @@ const char* EDecoder::processManagedAcctsMsg(			const char* 	ptr,
 	DECODE_FIELD( 		accountsList		);
 
 	//************************************************
+	// callback
+	//************************************************
 
 	m_pEWrapper->managedAccounts( 	accountsList	);
 
@@ -1355,6 +1393,9 @@ const char* EDecoder::processReceiveFaMsg(				const char* 	ptr,
 	DECODE_FIELD( 		faDataTypeInt		);
 	DECODE_FIELD( 		cxml				);
 
+
+	//****************************************************************************
+	// callback
 	//****************************************************************************
 
 	m_pEWrapper->receiveFA( 			(faDataType)faDataTypeInt, 
@@ -1454,6 +1495,8 @@ const char* EDecoder::processHistoricalDataMsg(				const char* 	ptr,
 	}
 
 	//********************************************************************
+	// callback
+	//********************************************************************
 
 	// send end of dataset marker
 	m_pEWrapper->historicalDataEnd( 			reqId, 
@@ -1489,6 +1532,8 @@ const char* EDecoder::processHistoricalDataUpdateMsg(			const char* 	ptr,
 	DECODE_FIELD(			bar.wap				);
 	DECODE_FIELD(			bar.volume			);
 
+	//****************************************************************
+	// callback
 	//****************************************************************
 
 	m_pEWrapper->historicalDataUpdate( 			reqId, 
@@ -1567,6 +1612,8 @@ const char* EDecoder::processScannerDataMsg(			const char* 	ptr,
 	}
 
 	//***************************************
+	// callback
+	//***************************************
 
 	m_pEWrapper->scannerDataEnd( tickerId  );
 
@@ -1589,6 +1636,8 @@ const char* EDecoder::processScannerParametersMsg(			const char* 	ptr,
 	DECODE_FIELD( 		xml				);
 
 	//**************************************
+	// callback
+	//**************************************
 
 	m_pEWrapper->scannerParameters(  xml  );
 
@@ -1610,6 +1659,8 @@ const char* EDecoder::processCurrentTimeMsg(			const char* 	ptr,
 	DECODE_FIELD(			version				);
 	DECODE_FIELD(			time				);
 
+	//*********************************
+	// callback
 	//*********************************
 
 	m_pEWrapper->currentTime(  time  );
@@ -1650,6 +1701,8 @@ const char* EDecoder::processRealTimeBarsMsg(			const char* 	ptr,
 
 
 	//********************************************************
+	// callback
+	//********************************************************
 
 	m_pEWrapper->realtimeBar( 			reqId, 
 										time, 
@@ -1681,6 +1734,9 @@ const char* EDecoder::processFundamentalDataMsg(			const char* 	ptr,
 	DECODE_FIELD( 		reqId		);
 	DECODE_FIELD( 		data		);
 
+
+	//************************************************************
+	// callback
 	//************************************************************
 
 	m_pEWrapper->fundamentalData( 			reqId, 
@@ -1705,6 +1761,8 @@ const char* EDecoder::processContractDataEndMsg(			const char* 	ptr,
 	DECODE_FIELD( 		reqId			);
 
 	//*****************************************
+	// callback
+	//*****************************************
 
 	m_pEWrapper->contractDetailsEnd(  reqId  );
 
@@ -1724,6 +1782,8 @@ const char* EDecoder::processOpenOrderEndMsg( 			const char* 	ptr,
 
 	DECODE_FIELD( 		version			);
 
+	//**************************
+	// callback
 	//**************************
 
 	m_pEWrapper->openOrderEnd();
@@ -1746,6 +1806,9 @@ const char* EDecoder::processAcctDownloadEndMsg(				const char* 	ptr,
 	DECODE_FIELD( 		version			);
 	DECODE_FIELD( 		account			);
 
+
+	//*******************************************
+	// callback
 	//*******************************************
 
 	m_pEWrapper->accountDownloadEnd(  account  );
@@ -1768,6 +1831,8 @@ const char* EDecoder::processExecutionDetailsEndMsg(			const char* 	ptr,
 	DECODE_FIELD( 		version			);
 	DECODE_FIELD( 		reqId			);
 
+	//*************************************
+	// callback
 	//*************************************
 
 	m_pEWrapper->execDetailsEnd(  reqId  );
@@ -1797,6 +1862,8 @@ const char* EDecoder::processDeltaNeutralValidationMsg(				const char* 	ptr,
 	DECODE_FIELD( 		deltaNeutralContract.price			);
 
 	//********************************************************************************
+	// callback
+	//********************************************************************************
 
 	m_pEWrapper->deltaNeutralValidation( 			reqId, 
 													deltaNeutralContract			);
@@ -1819,6 +1886,8 @@ const char* EDecoder::processTickSnapshotEndMsg(			const char* 	ptr,
 	DECODE_FIELD( 		version			);
 	DECODE_FIELD( 		reqId			);
 
+	//**************************************
+	// callback
 	//**************************************
 
 	m_pEWrapper->tickSnapshotEnd(  reqId  );
@@ -1843,6 +1912,8 @@ const char* EDecoder::processMarketDataTypeMsg(				const char* 	ptr,
 	DECODE_FIELD( 		reqId				);
 	DECODE_FIELD( 		marketDataType		);
 
+	//********************************************************************
+	// callback
 	//********************************************************************
 
 	m_pEWrapper->marketDataType( 			reqId, 
@@ -1873,6 +1944,9 @@ const char* EDecoder::processCommissionReportMsg(			const char* 	ptr,
 	DECODE_FIELD( 		commissionReport.yield						);
 	DECODE_FIELD( 		commissionReport.yieldRedemptionDate		);
 
+
+	//**************************************************
+	// callback
 	//**************************************************
 
 	m_pEWrapper->commissionReport( 	commissionReport  );
@@ -1939,6 +2013,8 @@ const char* EDecoder::processPositionDataMsg(			const char* 	ptr,
 	}
 
 	//************************************************************
+	// callback
+	//************************************************************
 
 	m_pEWrapper->position( 				account, 
 										contract, 
@@ -1961,6 +2037,9 @@ const char* EDecoder::processPositionEndMsg(			const char* 	ptr,
 
 	DECODE_FIELD(  		version		);
 
+
+	//*************************
+	// callback
 	//*************************
 
 	m_pEWrapper->positionEnd();
@@ -1993,6 +2072,8 @@ const char* EDecoder::processAccountSummaryMsg(				const char* 	ptr,
 	DECODE_FIELD( 		curency			);
 
 	//****************************************************************
+	// callback
+	//****************************************************************
 
 	m_pEWrapper->accountSummary( 			reqId, 
 											account, 
@@ -2018,6 +2099,9 @@ const char* EDecoder::processAccountSummaryEndMsg(			const char* 	ptr,
 	DECODE_FIELD( 		version			);
 	DECODE_FIELD( 		reqId			);
 
+
+	//****************************************
+	// callback
 	//****************************************
 
 	m_pEWrapper->accountSummaryEnd(  reqId  );
@@ -2040,6 +2124,9 @@ const char* EDecoder::processVerifyMessageApiMsg(			const char* 	ptr,
 	DECODE_FIELD( 		version			);
 	DECODE_FIELD( 		apiData			);
 
+
+	//*****************************************	
+	// callback
 	//*****************************************
 
 	m_pEWrapper->verifyMessageAPI(  apiData  );
@@ -2066,6 +2153,9 @@ const char* EDecoder::processVerifyCompletedMsg(			const char* 	ptr,
 
 	bool bRes = isSuccessful == "true";
 
+
+	//****************************************************************
+	// callback
 	//****************************************************************
 
 	m_pEWrapper->verifyCompleted( 			bRes, 
@@ -2091,6 +2181,9 @@ const char* EDecoder::processDisplayGroupListMsg(			const char* 	ptr,
 	DECODE_FIELD( 		reqId			);
 	DECODE_FIELD( 		groups			);
 
+
+	//************************************************************
+	// callback
 	//************************************************************
 
 	m_pEWrapper->displayGroupList( 			reqId, 
@@ -2116,6 +2209,9 @@ const char* EDecoder::processDisplayGroupUpdatedMsg(			const char* 	ptr,
 	DECODE_FIELD( 		reqId				);
 	DECODE_FIELD( 		contractInfo		);
 
+
+	//********************************************************************
+	// callback
 	//********************************************************************
 
 	m_pEWrapper->displayGroupUpdated( 			reqId, 
@@ -2141,6 +2237,9 @@ const char* EDecoder::processVerifyAndAuthMessageApiMsg(			const char* 	ptr,
 	DECODE_FIELD( 		apiData				);
 	DECODE_FIELD( 		xyzChallenge		);
 
+
+	//************************************************************************
+	// callback
 	//************************************************************************
 
 	m_pEWrapper->verifyAndAuthMessageAPI( 			apiData, 
@@ -2168,6 +2267,9 @@ const char* EDecoder::processVerifyAndAuthCompletedMsg(			const char* 	ptr,
 
 	bool bRes = isSuccessful == "true";
 
+
+	//********************************************************************
+	// callback
 	//********************************************************************
 
 	m_pEWrapper->verifyAndAuthCompleted( 			bRes, 
@@ -2213,6 +2315,9 @@ const char* EDecoder::processPositionMultiMsg(			const char* 	ptr,
 	DECODE_FIELD( 			avgCost										);
 	DECODE_FIELD( 			modelCode									);
 
+
+	//********************************************************************
+	// callback
 	//********************************************************************
 
 	m_pEWrapper->positionMulti( 			reqId, 
@@ -2240,6 +2345,8 @@ const char* EDecoder::processPositionMultiEndMsg(			const char* 	ptr,
 	DECODE_FIELD( 		version			);
 	DECODE_FIELD( 		reqId			);
 
+	//***************************************
+	// callback
 	//***************************************
 
 	m_pEWrapper->positionMultiEnd(  reqId  );

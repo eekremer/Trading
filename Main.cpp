@@ -111,6 +111,13 @@ int main( 	int argc, char** argv 	)
 			{
 				// reqMktDepth and reqMktData
  				client.setState(  	ST_REQMKTDEPTHEXCHANGES		);
+			}
+
+			if ( trial == 4 )
+			{
+	
+				// reqMktDepth and reqMktData
+ 				client.setState(  	ST_TICKDATAOPERATION		);
 			}		
 
 

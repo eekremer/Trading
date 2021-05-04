@@ -246,9 +246,10 @@ struct EClientMsgSink;
 class TWSAPIDLLEXP EDecoder
 {
 
-    EWrapper*           m_pEWrapper;
+
+    EWrapper           *m_pEWrapper;
     int                 m_serverVersion;
-    EClientMsgSink*     m_pClientMsgSink;
+    EClientMsgSink     *m_pClientMsgSink;
 
 
     const char*     processTickPriceMsg                 (       const char* ptr,    const char* endPtr          );
@@ -373,11 +374,11 @@ public:
 
     EDecoder(               int                 serverVersion, 
                             EWrapper*           callback, 
-                            EClientMsgSink*     clientMsgSink = 0               );
+                            EClientMsgSink*     clientMsgSink = 0                           );
 
 
-    int parseAndProcessMsg(         const char*&    beginPtr, 
-                                    const char*     endPtr                      );
+    int                 parseAndProcessMsg(     const char*&    beginPtr, 
+                                                const char*     endPtr                      );
 
 
 };

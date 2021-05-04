@@ -560,10 +560,10 @@ public:
 
 private:	
 
-	virtual int receive					( 			char* 						buf, 
+	virtual int 	receive				( 			char* 						buf, 
 													size_t 						sz 								) = 0;
 
-	static bool isAsciiPrintable		( 			const std::string& 			s 								);
+	static bool 	isAsciiPrintable	( 			const std::string& 			s 								);
 
 protected:
 
@@ -578,38 +578,41 @@ protected:
 
 
    	// encoders
-	template<class T> static void  EncodeField( std::ostream&, T );
+	template<class T> 
+	static void  	EncodeField			( 			std::ostream&, 
+													T 															);
 
 public:
 
-	void startApi();
+	void 			startApi();
 
-    void EncodeContract					(		std::ostream& 				os, 
+    void 			EncodeContract		(		std::ostream& 				os, 
 												const Contract&				contract			);
 
-    void EncodeTagValueList				(		std::ostream& 				os,
+    void 			EncodeTagValueList	(		std::ostream& 				os,
 												const TagValueListSPtr 		&tagValueList		);
 
 	// "max" encoders
-	static void EncodeFieldMax			( 		std::ostream& 				os, 
+	static void 	EncodeFieldMax		( 		std::ostream& 				os, 
 												int												);
 
-	static void EncodeFieldMax			( 		std::ostream& 				os, 
+	static void 	EncodeFieldMax		( 		std::ostream& 				os, 
 												double											);
 
 	// socket state
 private:
-	virtual bool isSocketOK() const = 0;
+	virtual bool 	isSocketOK			() const = 0;
 
 protected:
 
-	bool 	isConnecting				(														) const;
-	int 	sendConnectRequest			(														);
-    bool 	extraAuth					(														);
+	bool 			isConnecting		() const;
+	int 			sendConnectRequest	();
+    bool 			extraAuth			();
 
 protected:
 
-	EWrapper*						m_pEWrapper;
+	EWrapper	   *m_pEWrapper;
+
 	std::unique_ptr<ETransport> 	m_transport;
 
 private:
