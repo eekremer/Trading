@@ -645,16 +645,21 @@ void OrderSamples::BracketOrder(		int 			parentOrderId,
 										double 			stopLossPrice				)		
 {
 
+
+	//**********************************************
+
 	//This will be our main or "parent" order
 	parent.orderId 				= 	parentOrderId;
 	parent.action 				= 	action;
 	parent.orderType 			= 	"LMT";
 	parent.totalQuantity 		= 	quantity;
 	parent.lmtPrice 			= 	limitPrice;
-
+	parent.transmit 			= 	false;
+	
 	//The parent and children orders will need this attribute set to false to prevent accidental executions.
     //The LAST CHILD will have it set to true, 
-	parent.transmit = false;
+
+	//**********************************************
 
 	takeProfit.orderId 			= 	parent.orderId + 1;
 	takeProfit.action 			= 	(action == "BUY") ? "SELL" : "BUY";
@@ -664,18 +669,19 @@ void OrderSamples::BracketOrder(		int 			parentOrderId,
 	takeProfit.parentId 		= 	parentOrderId;
 	takeProfit.transmit 		= 	false;
 
+	//**********************************************
+
 	stopLoss.orderId 			= 	parent.orderId + 2;
 	stopLoss.action				= 	(action == "BUY") ? "SELL" : "BUY";
 	stopLoss.orderType 			= 	"STP";
-
-	//Stop trigger price
-	stopLoss.auxPrice 			= 	stopLossPrice;
+	stopLoss.auxPrice 			= 	stopLossPrice;	//Stop trigger price
 	stopLoss.totalQuantity 		= 	quantity;
 	stopLoss.parentId 			= 	parentOrderId;
-	
+	stopLoss.transmit 			= 	true;
 	//In this case, the low side order will be the last child being sent. Therefore, it needs to set this attribute to true 
     //to activate all its predecessors
-	stopLoss.transmit 			= 	true;
+	
+	//**********************************************
 
 }
 	//! [bracket]

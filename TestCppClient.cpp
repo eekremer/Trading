@@ -312,6 +312,7 @@ void TestCppClient::processMessages()
 			break;
 
 		//*************************************************
+		// Bracket order
 		//*************************************************
 		
 		case ST_BRACKETSAMPLES:

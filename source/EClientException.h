@@ -17,8 +17,8 @@ struct EClientException : public std::exception
 
 private:
 
-    CodeMsgPair m_error;
-    std::string m_text;
+    CodeMsgPair  m_error;
+    std::string  m_text;
 
 public:
 

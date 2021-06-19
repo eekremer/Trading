@@ -52,9 +52,9 @@ struct ScannerSubscription
     double          couponRateAbove;
     double          couponRateBelow;
     int             excludeConvertible;
-	int             averageOptionVolumeAbove;
-	std::string     scannerSettingPairs;
-	std::string     stockTypeFilter;
+    int             averageOptionVolumeAbove;
+    std::string     scannerSettingPairs;
+    std::string     stockTypeFilter;
 
 };
 

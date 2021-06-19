@@ -285,7 +285,7 @@ public:
 public:
 
 	// access to protected variables
-	EWrapper * 	getWrapper() const;
+	EWrapper* 	getWrapper() const;
 
 protected:
 	void 		setClientId				(			int 						clientId						);

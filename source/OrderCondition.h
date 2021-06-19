@@ -30,8 +30,8 @@ public:
 
 private:
 
-	OrderConditionType 	m_type;
-	bool 				m_isConjunctionConnection;
+	OrderConditionType 		m_type;
+	bool 					m_isConjunctionConnection;
 
 public:
 

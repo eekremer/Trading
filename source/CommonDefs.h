@@ -14,7 +14,7 @@ enum faDataType
 	GROUPS=1, 
 	PROFILES, 
 	ALIASES 
-} ;
+};
 
 
 

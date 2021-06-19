@@ -178,6 +178,7 @@ Contract ContractSamples::CashCFD()
 
 Contract ContractSamples::EuropeanStock()
 {
+
 	Contract contract;
 
     contract.symbol 			= "NOKIA";
@@ -187,6 +188,7 @@ Contract ContractSamples::EuropeanStock()
 	contract.primaryExchange 	= "HEX";
 
     return contract;
+
 }
 
 //******************************************************************************************

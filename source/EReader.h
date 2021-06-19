@@ -23,8 +23,8 @@ class  EMessage;
 class TWSAPIDLLEXP EReader
 {  
 
-    EClientSocket*                          m_pClientSocket;
-    EReaderSignal*                          m_pEReaderSignal;
+    EClientSocket                          *m_pClientSocket;
+    EReaderSignal                          *m_pEReaderSignal;
     EDecoder                                processMsgsDecoder_;
     
 
